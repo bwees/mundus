@@ -513,6 +513,13 @@ func (b *Bridge) publishState() {
 	b.publishSettingsState()
 }
 
+// discoveryTopic is where Home Assistant looks for one entity's config. These
+// are published retained, so renaming a key strands the old entity in Home
+// Assistant until something publishes an empty payload to its old topic.
+func (b *Bridge) discoveryTopic(component, key string) string {
+	return fmt.Sprintf("%s/%s/%s_%s/config", b.cfg.DiscoveryPrefix, component, b.cfg.DeviceID, key)
+}
+
 func (b *Bridge) publishDiscovery() {
 	b.publishJSONRetained(
 		fmt.Sprintf("%s/vacuum/%s/config", b.cfg.DiscoveryPrefix, b.cfg.DeviceID),
@@ -520,25 +527,25 @@ func (b *Bridge) publishDiscovery() {
 	)
 	for _, e := range b.buttons() {
 		b.publishJSONRetained(
-			fmt.Sprintf("%s/button/%s_%s/config", b.cfg.DiscoveryPrefix, b.cfg.DeviceID, e.slug),
+			b.discoveryTopic("button", e.slug),
 			b.buttonConfig(e),
 		)
 	}
 	for _, e := range b.selects() {
 		b.publishJSONRetained(
-			fmt.Sprintf("%s/select/%s_%s/config", b.cfg.DiscoveryPrefix, b.cfg.DeviceID, e.slug),
+			b.discoveryTopic("select", e.slug),
 			b.selectConfig(e),
 		)
 	}
 	if b.dryingConfigured() {
 		b.publishJSONRetained(
-			fmt.Sprintf("%s/switch/%s_mop_drying/config", b.cfg.DiscoveryPrefix, b.cfg.DeviceID),
+			b.discoveryTopic("switch", "mop_drying"),
 			b.switchConfig(),
 		)
 	}
 	for _, e := range b.settings() {
 		b.publishJSONRetained(
-			fmt.Sprintf("%s/%s/%s_%s/config", b.cfg.DiscoveryPrefix, component(e.Kind), b.cfg.DeviceID, e.Key),
+			b.discoveryTopic(component(e.Kind), e.Key),
 			b.settingConfig(e),
 		)
 	}
