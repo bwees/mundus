@@ -1,0 +1,67 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: server/go.mod
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - name: Build web UI
+        working-directory: web
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm run build
+
+      - name: Build server (linux/arm64)
+        working-directory: server
+        env:
+          GOOS: linux
+          GOARCH: arm64
+          CGO_ENABLED: '0'
+        run: |
+          go build -ldflags "-s -w -X main.version=${GITHUB_REF_NAME}" -o ../dist/mundus-linux-arm64 .
+
+      - name: Package assets
+        run: |
+          mkdir -p dist
+          tar -C web/build -czf dist/web.tar.gz .
+
+      - name: Build mundus installer USB zip
+        run: ./usb/build-zip.sh --bin dist/mundus-linux-arm64 --web web/build --out dist/develop-tools-mundus.zip
+
+      - name: Checksums
+        run: |
+          cd dist
+          sha256sum mundus-linux-arm64 web.tar.gz develop-tools-mundus.zip > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/mundus-linux-arm64
+            dist/web.tar.gz
+            dist/develop-tools-mundus.zip
+            dist/SHA256SUMS

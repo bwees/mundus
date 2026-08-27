@@ -1,0 +1,58 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: server/go.mod
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - name: Build web UI
+        working-directory: web
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm run check
+          pnpm run build
+
+      - name: Test server (native)
+        working-directory: server
+        run: |
+          go vet ./...
+          go test ./...
+
+      - name: Build server (linux/arm64)
+        working-directory: server
+        env:
+          GOOS: linux
+          GOARCH: arm64
+          CGO_ENABLED: '0'
+        run: |
+          go build -ldflags "-s -w -X main.version=${GITHUB_SHA::7}" -o ../dist/mundus-linux-arm64 .
+
+      - name: Build mundus installer USB zip
+        run: ./usb/build-zip.sh --bin dist/mundus-linux-arm64 --web web/build --out dist/develop-tools-mundus.zip
+
+      - name: Upload installer USB zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: develop-tools-mundus
+          path: dist/develop-tools-mundus.zip

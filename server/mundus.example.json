@@ -1,0 +1,17 @@
+{
+  "device_id": "switchbot_s20",
+  "device_name": "SwitchBot S20",
+  "robot_addr": "127.0.0.1:50000",
+  "mqtt_broker": "",
+  "mqtt_username": "",
+  "mqtt_password": "",
+  "mqtt_client_id": "mundus",
+  "discovery_prefix": "homeassistant",
+  "base_topic": "mundus",
+  "map_dir": "/data/map_server/map",
+  "property_cache": "/data/control_center/db/property_table_cache.json",
+  "web_addr": ":8080",
+  "web_static": "/opt/wlab/sweepbot/mundus/web",
+  "runtime_path": "/opt/wlab/sweepbot/mundus/runtime.json",
+  "poll_interval_ms": 10000
+}

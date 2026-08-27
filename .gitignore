@@ -1,0 +1,17 @@
+# build output
+/dist/
+/server/mundus
+/server/mundus-arm64
+node_modules/
+.svelte-kit/
+/web/build/
+/zipbuilder/build/
+
+# local runtime config / built sticks
+/server/mundus.json
+develop-tools*.zip
+
+.DS_Store
+*.env
+
+.claude

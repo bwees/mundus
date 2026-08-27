@@ -1,0 +1,52 @@
+[tools]
+go = "1.27.0"
+node = "24"
+pnpm = "11"
+
+[env]
+DEVICE = "wlab@192.168.30.148"
+DEVICE_DIR = "/opt/wlab/sweepbot/mundus"
+
+[tasks.install]
+description = "Install web dependencies"
+dir = "web"
+run = "pnpm install"
+
+[tasks.zip]
+description = "Build the mundus installer USB zip (needs `mise run dist` first)"
+run = "./usb/build-zip.sh --bin dist/mundus --web web/build --out dist/develop-tools-mundus.zip"
+
+[tasks.openapi]
+description = "Regenerate server openapi.json and the typed web client"
+run = [
+  "cd server && go run . -openapi",
+  "cd web && pnpm run openapi:generate",
+]
+
+[tasks.dev]
+description = "Run the web UI in dev mode (proxies /api to :8080)"
+dir = "web"
+run = "pnpm run dev"
+
+[tasks.web-build]
+description = "Build the static web UI"
+dir = "web"
+run = "pnpm run build"
+
+[tasks.build]
+description = "Cross-compile the mundus server for the device (linux/arm64)"
+run = "cd server && GOOS=linux GOARCH=arm64 go build -o ../dist/mundus ."
+
+[tasks.dist]
+description = "Build server binary + web bundle into dist/"
+depends = ["build", "web-build"]
+run = "rm -rf dist/web && cp -r web/build dist/web"
+
+[tasks.deploy]
+description = "Build everything and deploy binary + web to the device"
+depends = ["dist"]
+run = [
+  "ssh $DEVICE 'sudo mkdir -p $DEVICE_DIR/web && sudo chown -R wlab $DEVICE_DIR'",
+  "ssh $DEVICE 'cat > $DEVICE_DIR/mundus' < dist/mundus && ssh $DEVICE 'chmod +x $DEVICE_DIR/mundus'",
+  "tar -C dist/web -czf - . | ssh $DEVICE 'rm -rf $DEVICE_DIR/web/* && tar -C $DEVICE_DIR/web -xzf -'",
+]

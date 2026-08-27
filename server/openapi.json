@@ -1,0 +1,3167 @@
+{
+	"components": {
+		"schemas": {
+			"AddZoneInput": {
+				"description": "AddZoneInput schema",
+				"properties": {
+					"geometry": {
+						"items": {
+							"format": "double",
+							"type": "number"
+						},
+						"type": [
+							"array",
+							"null"
+						]
+					},
+					"kind": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"geometry",
+					"kind",
+					"name"
+				],
+				"type": "object"
+			},
+			"AuthStatusDTO": {
+				"description": "AuthStatusDTO schema",
+				"properties": {
+					"setup_required": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"setup_required"
+				],
+				"type": "object"
+			},
+			"ChangePasswordInput": {
+				"description": "ChangePasswordInput schema",
+				"properties": {
+					"current_password": {
+						"type": "string"
+					},
+					"new_password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"current_password",
+					"new_password"
+				],
+				"type": "object"
+			},
+			"CleanRequest": {
+				"description": "CleanRequest schema",
+				"properties": {
+					"mode": {
+						"$ref": "#/components/schemas/ModeDTO"
+					},
+					"rooms": {
+						"items": {
+							"type": "string"
+						},
+						"type": [
+							"array",
+							"null"
+						]
+					}
+				},
+				"required": [
+					"mode",
+					"rooms"
+				],
+				"type": "object"
+			},
+			"CloudStatus": {
+				"description": "CloudStatus schema",
+				"properties": {
+					"bound": {
+						"type": "boolean"
+					},
+					"connected": {
+						"type": "boolean"
+					},
+					"enabled": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"bound",
+					"connected",
+					"enabled"
+				],
+				"type": "object"
+			},
+			"CredentialsInput": {
+				"description": "CredentialsInput schema",
+				"properties": {
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"password"
+				],
+				"type": "object"
+			},
+			"EnabledInput": {
+				"description": "EnabledInput schema",
+				"properties": {
+					"enabled": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"enabled"
+				],
+				"type": "object"
+			},
+			"ErrorItem": {
+				"properties": {
+					"more": {
+						"additionalProperties": {
+							"description": "Additional information about the error"
+						},
+						"description": "Additional information about the error",
+						"type": [
+							"object",
+							"null"
+						]
+					},
+					"name": {
+						"description": "For example, name of the parameter that caused the error",
+						"type": "string"
+					},
+					"reason": {
+						"description": "Human readable error message",
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"reason"
+				],
+				"type": "object"
+			},
+			"HTTPError": {
+				"description": "HTTPError schema",
+				"properties": {
+					"detail": {
+						"description": "Human readable error message",
+						"type": "string"
+					},
+					"errors": {
+						"items": {
+							"$ref": "#/components/schemas/ErrorItem"
+						},
+						"type": [
+							"array",
+							"null"
+						]
+					},
+					"instance": {
+						"type": "string"
+					},
+					"status": {
+						"description": "HTTP status code",
+						"example": 403,
+						"type": "integer"
+					},
+					"title": {
+						"description": "Short title of the error",
+						"type": "string"
+					},
+					"type": {
+						"description": "URL of the error type. Can be used to lookup the error in a documentation",
+						"type": "string"
+					}
+				},
+				"type": "object"
+			},
+			"KeyInput": {
+				"description": "KeyInput schema",
+				"properties": {
+					"key": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"key"
+				],
+				"type": "object"
+			},
+			"MQTTConfigDTO": {
+				"description": "MQTTConfigDTO schema",
+				"properties": {
+					"base_topic": {
+						"type": "string"
+					},
+					"broker": {
+						"type": "string"
+					},
+					"connected": {
+						"type": "boolean"
+					},
+					"discovery_prefix": {
+						"type": "string"
+					},
+					"has_password": {
+						"type": "boolean"
+					},
+					"username": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"base_topic",
+					"broker",
+					"connected",
+					"discovery_prefix",
+					"has_password",
+					"username"
+				],
+				"type": "object"
+			},
+			"MQTTConfigInput": {
+				"description": "MQTTConfigInput schema",
+				"properties": {
+					"base_topic": {
+						"type": "string"
+					},
+					"broker": {
+						"type": "string"
+					},
+					"discovery_prefix": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"username": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"base_topic",
+					"broker",
+					"discovery_prefix",
+					"password",
+					"username"
+				],
+				"type": "object"
+			},
+			"MapDTO": {
+				"description": "MapDTO schema",
+				"properties": {
+					"height": {
+						"type": "integer"
+					},
+					"image_png": {
+						"type": "string"
+					},
+					"origin_x": {
+						"format": "double",
+						"type": "number"
+					},
+					"origin_y": {
+						"format": "double",
+						"type": "number"
+					},
+					"resolution": {
+						"format": "double",
+						"type": "number"
+					},
+					"rooms": {
+						"items": {
+							"$ref": "#/components/schemas/RoomGeomDTO"
+						},
+						"type": [
+							"array",
+							"null"
+						]
+					},
+					"uuid": {
+						"type": "string"
+					},
+					"width": {
+						"type": "integer"
+					},
+					"zones": {
+						"items": {
+							"$ref": "#/components/schemas/ZoneDTO"
+						},
+						"type": [
+							"array",
+							"null"
+						]
+					}
+				},
+				"required": [
+					"height",
+					"image_png",
+					"origin_x",
+					"origin_y",
+					"resolution",
+					"rooms",
+					"uuid",
+					"width",
+					"zones"
+				],
+				"type": "object"
+			},
+			"MergeRoomsInput": {
+				"description": "MergeRoomsInput schema",
+				"properties": {
+					"ids": {
+						"items": {
+							"type": "string"
+						},
+						"type": [
+							"array",
+							"null"
+						]
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"ids",
+					"name"
+				],
+				"type": "object"
+			},
+			"ModeDTO": {
+				"properties": {
+					"fan_level": {
+						"type": "integer"
+					},
+					"times": {
+						"type": "integer"
+					},
+					"type": {
+						"type": "string"
+					},
+					"water_level": {
+						"type": "integer"
+					}
+				},
+				"required": [
+					"fan_level",
+					"times",
+					"type",
+					"water_level"
+				],
+				"type": "object"
+			},
+			"OK": {
+				"description": "OK schema",
+				"properties": {
+					"ok": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"ok"
+				],
+				"type": "object"
+			},
+			"Option": {
+				"properties": {
+					"label": {
+						"type": "string"
+					},
+					"value": {
+						"type": "integer"
+					}
+				},
+				"required": [
+					"label",
+					"value"
+				],
+				"type": "object"
+			},
+			"RenameRoomInput": {
+				"description": "RenameRoomInput schema",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"name"
+				],
+				"type": "object"
+			},
+			"RoomDTO": {
+				"description": "RoomDTO schema",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"name"
+				],
+				"type": "object"
+			},
+			"RoomGeomDTO": {
+				"properties": {
+					"color_type": {
+						"type": "integer"
+					},
+					"geometry": {
+						"items": {
+							"format": "double",
+							"type": "number"
+						},
+						"type": [
+							"array",
+							"null"
+						]
+					},
+					"graph": {
+						"items": {
+							"type": "integer"
+						},
+						"type": [
+							"array",
+							"null"
+						]
+					},
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"color_type",
+					"geometry",
+					"graph",
+					"id",
+					"name"
+				],
+				"type": "object"
+			},
+			"SSHKey": {
+				"properties": {
+					"comment": {
+						"type": "string"
+					},
+					"key": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"comment",
+					"key",
+					"type"
+				],
+				"type": "object"
+			},
+			"SSHStatus": {
+				"description": "SSHStatus schema",
+				"properties": {
+					"enabled": {
+						"type": "boolean"
+					},
+					"keys": {
+						"items": {
+							"$ref": "#/components/schemas/SSHKey"
+						},
+						"type": [
+							"array",
+							"null"
+						]
+					}
+				},
+				"required": [
+					"enabled",
+					"keys"
+				],
+				"type": "object"
+			},
+			"SelfCleanRequest": {
+				"description": "SelfCleanRequest schema",
+				"properties": {
+					"action": {
+						"type": "integer"
+					}
+				},
+				"required": [
+					"action"
+				],
+				"type": "object"
+			},
+			"Setting": {
+				"properties": {
+					"default": {
+						"type": "integer"
+					},
+					"icon": {
+						"type": "string"
+					},
+					"key": {
+						"type": "string"
+					},
+					"kind": {
+						"type": "string"
+					},
+					"max": {
+						"type": "integer"
+					},
+					"min": {
+						"type": "integer"
+					},
+					"name": {
+						"type": "string"
+					},
+					"options": {
+						"items": {
+							"$ref": "#/components/schemas/Option"
+						},
+						"type": [
+							"array",
+							"null"
+						]
+					},
+					"prop": {
+						"type": "integer"
+					}
+				},
+				"required": [
+					"default",
+					"icon",
+					"key",
+					"kind",
+					"name",
+					"prop"
+				],
+				"type": "object"
+			},
+			"SettingsDTO": {
+				"description": "SettingsDTO schema",
+				"properties": {
+					"schema": {
+						"items": {
+							"$ref": "#/components/schemas/Setting"
+						},
+						"type": [
+							"array",
+							"null"
+						]
+					},
+					"values": {
+						"additionalProperties": {
+							"type": "integer"
+						},
+						"type": [
+							"object",
+							"null"
+						]
+					}
+				},
+				"required": [
+					"schema",
+					"values"
+				],
+				"type": "object"
+			},
+			"SettingsInput": {
+				"description": "SettingsInput schema",
+				"properties": {
+					"values": {
+						"additionalProperties": {
+							"type": "integer"
+						},
+						"type": [
+							"object",
+							"null"
+						]
+					}
+				},
+				"required": [
+					"values"
+				],
+				"type": "object"
+			},
+			"SplitRoomInput": {
+				"description": "SplitRoomInput schema",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"line": {},
+					"new_name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"line",
+					"new_name"
+				],
+				"type": "object"
+			},
+			"StateDTO": {
+				"description": "StateDTO schema",
+				"properties": {
+					"battery_level": {
+						"type": "integer"
+					},
+					"charging": {
+						"type": "boolean"
+					},
+					"cloud_connected": {
+						"type": "boolean"
+					},
+					"device_name": {
+						"type": "string"
+					},
+					"docked": {
+						"type": "boolean"
+					},
+					"error_code": {
+						"type": "integer"
+					},
+					"fan_speed": {
+						"type": "string"
+					},
+					"run_state": {
+						"type": "string"
+					},
+					"state": {
+						"type": "string"
+					},
+					"working_status": {
+						"type": "integer"
+					}
+				},
+				"required": [
+					"battery_level",
+					"charging",
+					"cloud_connected",
+					"device_name",
+					"docked",
+					"error_code",
+					"fan_speed",
+					"run_state",
+					"state",
+					"working_status"
+				],
+				"type": "object"
+			},
+			"Status": {
+				"description": "Status schema",
+				"properties": {
+					"current_version": {
+						"type": "string"
+					},
+					"error": {
+						"type": "string"
+					},
+					"last_checked": {
+						"format": "date-time",
+						"type": "string"
+					},
+					"latest_version": {
+						"type": "string"
+					},
+					"state": {
+						"type": "string"
+					},
+					"update_available": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"current_version",
+					"last_checked",
+					"latest_version",
+					"state",
+					"update_available"
+				],
+				"type": "object"
+			},
+			"TokenDTO": {
+				"description": "TokenDTO schema",
+				"properties": {
+					"token": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"token"
+				],
+				"type": "object"
+			},
+			"UpdateZoneInput": {
+				"description": "UpdateZoneInput schema",
+				"properties": {
+					"geometry": {
+						"items": {
+							"format": "double",
+							"type": "number"
+						},
+						"type": [
+							"array",
+							"null"
+						]
+					},
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"geometry",
+					"id",
+					"name"
+				],
+				"type": "object"
+			},
+			"ZoneDTO": {
+				"properties": {
+					"geometry": {
+						"items": {
+							"format": "double",
+							"type": "number"
+						},
+						"type": [
+							"array",
+							"null"
+						]
+					},
+					"id": {
+						"type": "string"
+					},
+					"kind": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"geometry",
+					"id",
+					"kind",
+					"name"
+				],
+				"type": "object"
+			},
+			"ZoneIDInput": {
+				"description": "ZoneIDInput schema",
+				"properties": {
+					"id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id"
+				],
+				"type": "object"
+			},
+			"unknown-interface": {
+				"description": "unknown-interface schema"
+			}
+		}
+	},
+	"info": {
+		"description": "\nThis is the autogenerated OpenAPI documentation for your [Fuego](https://github.com/go-fuego/fuego) API.\n\nBelow is a Fuego Cheatsheet to help you get started. Don't hesitate to check the [Fuego documentation](https://go-fuego.dev) for more details.\n\nHappy coding! 🔥\n\n## Usage\n\n### Route registration\n\n```go\nfunc main() {\n\t// Create a new server\n\ts := fuego.NewServer()\n\n\t// Register some routes\n\tfuego.Post(s, \"/hello\", myController)\n\tfuego.Get(s, \"/myPath\", otherController)\n\tfuego.Put(s, \"/hello\", thirdController)\n\n\tadminRoutes := fuego.Group(s, \"/admin\")\n\tfuego.Use(adminRoutes, myMiddleware) // This middleware (for authentication, etc...) will be available for routes starting by /admin/*, \n\tfuego.Get(adminRoutes, \"/hello\", groupController) // This route will be available at /admin/hello\n\n\t// Start the server\n\ts.Start()\n}\n```\n\n### Basic controller\n\n```go\ntype MyBody struct {\n\tName string `json:\"name\" validate:\"required,max=30\"`\n}\n\ntype MyResponse struct {\n\tAnswer string `json:\"answer\"`\n}\n\nfunc hello(ctx fuego.ContextWithBody[MyBody]) (*MyResponse, error) {\n\tbody, err := ctx.Body()\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\n\treturn \u0026MyResponse{Answer: \"Hello \" + body.Name}, nil\n}\n```\n\n### Add openAPI information to the route\n\n```go\nimport (\n\t\"github.com/go-fuego/fuego\"\n\t\"github.com/go-fuego/fuego/option\"\n\t\"github.com/go-fuego/fuego/param\"\n)\n\nfunc main() {\n\ts := fuego.NewServer()\n\n\t// Custom OpenAPI options\n\tfuego.Post(s, \"/\", myController\n\t\toption.Description(\"This route does something...\"),\n\t\toption.Summary(\"This is my summary\"),\n\t\toption.Tags(\"MyTag\"), // A tag is set by default according to the return type (can be deactivated)\n\t\toption.Deprecated(), // Marks the route as deprecated in the OpenAPI spec\n\n\t\toption.Query(\"name\", \"Declares a query parameter with default value\", param.Default(\"Carmack\")),\n\t\toption.Header(\"Authorization\", \"Bearer token\", param.Required()),\n\t\toptionPagination,\n\t\toptionCustomBehavior,\n\t)\n\n\ts.Run()\n}\n\nvar optionPagination = option.Group(\n\toption.QueryInt(\"page\", \"Page number\", param.Default(1), param.Example(\"1st page\", 1), param.Example(\"42nd page\", 42)),\n\toption.QueryInt(\"perPage\", \"Number of items per page\"),\n)\n\nvar optionCustomBehavior = func(r *fuego.BaseRoute) {\n\tr.XXX = \"YYY\"\n}\n```\n\nThen, in the controller\n\n```go\ntype MyResponse struct {\n\tAnswer string `json:\"answer\"`\n}\n\nfunc getAllPets(ctx fuego.ContextNoBody) (*MyResponse, error) {\n\tname := ctx.QueryParam(\"name\")\n\tperPage, _ := ctx.QueryParamIntErr(\"per_page\")\n\n\treturn \u0026MyResponse{Answer: \"Hello \" + name}, nil\n}\n```\n",
+		"title": "OpenAPI",
+		"version": "0.0.1"
+	},
+	"openapi": "3.1.0",
+	"paths": {
+		"/api/auth/login": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerAuth.func3`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "login",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/CredentialsInput"
+							}
+						}
+					},
+					"description": "Request body for webapi.CredentialsInput",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TokenDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/TokenDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func3",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/auth/password": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerAuth.func4`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "changePassword",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/ChangePasswordInput"
+							}
+						}
+					},
+					"description": "Request body for webapi.ChangePasswordInput",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TokenDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/TokenDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func4",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/auth/setup": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerAuth.func2`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "setupAuth",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/CredentialsInput"
+							}
+						}
+					},
+					"description": "Request body for webapi.CredentialsInput",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TokenDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/TokenDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func2",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/auth/status": {
+			"get": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerAuth.func1`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "getAuthStatus",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AuthStatusDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/AuthStatusDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func1",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/clean": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func3`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "startClean",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/CleanRequest"
+							}
+						}
+					},
+					"description": "Request body for webapi.CleanRequest",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func3",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/config/mqtt": {
+			"get": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func12`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "getMqttConfig",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/MQTTConfigDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/MQTTConfigDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func12",
+				"tags": [
+					"api"
+				]
+			},
+			"put": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func13`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "setMqttConfig",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/MQTTConfigInput"
+							}
+						}
+					},
+					"description": "Request body for webapi.MQTTConfigInput",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/MQTTConfigDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/MQTTConfigDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func13",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/dock": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.cmd.func20`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "dock",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func20",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/locate": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.cmd.func28`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "locate",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func28",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/map": {
+			"get": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func1`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "getMap",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/MapDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/MapDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func1",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/map/merge": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func3`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "mergeRooms",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/MergeRoomsInput"
+							}
+						}
+					},
+					"description": "Request body for webapi.MergeRoomsInput",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func3",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/map/room": {
+			"put": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func2`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "renameRoom",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/RenameRoomInput"
+							}
+						}
+					},
+					"description": "Request body for webapi.RenameRoomInput",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func2",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/map/split": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func4`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "splitRoom",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/SplitRoomInput"
+							}
+						}
+					},
+					"description": "Request body for webapi.SplitRoomInput",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func4",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/map/zone": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func5`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "addZone",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/AddZoneInput"
+							}
+						}
+					},
+					"description": "Request body for webapi.AddZoneInput",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func5",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/map/zone/delete": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func7`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "deleteZone",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/ZoneIDInput"
+							}
+						}
+					},
+					"description": "Request body for webapi.ZoneIDInput",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func7",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/map/zone/update": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func6`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "updateZone",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateZoneInput"
+							}
+						}
+					},
+					"description": "Request body for webapi.UpdateZoneInput",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func6",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/pause": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.cmd.func22`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "pause",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func22",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/resume": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.cmd.func24`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "resume",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func24",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/rooms": {
+			"get": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func2`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "getRooms",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/RoomDTO"
+									},
+									"type": "array"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/RoomDTO"
+									},
+									"type": "array"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func2",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/self-clean": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func9`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "selfClean",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/SelfCleanRequest"
+							}
+						}
+					},
+					"description": "Request body for webapi.SelfCleanRequest",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func9",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/settings": {
+			"get": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func10`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "getSettings",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SettingsDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/SettingsDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func10",
+				"tags": [
+					"api"
+				]
+			},
+			"put": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func11`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "setSettings",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/SettingsInput"
+							}
+						}
+					},
+					"description": "Request body for webapi.SettingsInput",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func11",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/state": {
+			"get": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func1`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "getState",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StateDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/StateDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func1",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/stop": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.cmd.func26`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "stop",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func26",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/system/cloud": {
+			"get": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerSystem.func1`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "getCloud",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CloudStatus"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/CloudStatus"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func1",
+				"tags": [
+					"api"
+				]
+			},
+			"put": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerSystem.func2`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "setCloud",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/EnabledInput"
+							}
+						}
+					},
+					"description": "Request body for webapi.EnabledInput",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func2",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/system/ssh": {
+			"get": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerSystem.func3`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "getSsh",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SSHStatus"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/SSHStatus"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func3",
+				"tags": [
+					"api"
+				]
+			},
+			"put": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerSystem.func4`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "setSsh",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/EnabledInput"
+							}
+						}
+					},
+					"description": "Request body for webapi.EnabledInput",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func4",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/system/ssh/keys": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerSystem.func5`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "addSshKey",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/KeyInput"
+							}
+						}
+					},
+					"description": "Request body for webapi.KeyInput",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func5",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/system/ssh/keys/delete": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerSystem.func6`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "deleteSshKey",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/KeyInput"
+							}
+						}
+					},
+					"description": "Request body for webapi.KeyInput",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func6",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/update": {
+			"get": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerUpdate.func1`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "getUpdate",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Status"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/Status"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func1",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/update/apply": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerUpdate.func3`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "applyUpdate",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func3",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/update/check": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerUpdate.func2`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "checkUpdate",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Status"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/Status"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func2",
+				"tags": [
+					"api"
+				]
+			}
+		}
+	},
+	"tags": [
+		{
+			"name": "api"
+		}
+	]
+}
