@@ -25,6 +25,10 @@ type TokenDTO struct {
 	Token string `json:"token"`
 }
 
+type SessionDTO struct {
+	Authenticated bool `json:"authenticated"`
+}
+
 // publicRoutes are reachable without a token: the UI has to be able to discover
 // whether the device still needs setup, and to obtain a token in the first place.
 var publicRoutes = map[string]bool{
@@ -93,6 +97,13 @@ func registerAuth(api *fuego.Server, d Deps) {
 		}
 		return d.issueToken()
 	}, fuego.OptionOperationID("login"))
+
+	// Deliberately trivial: the guard has already validated the token by the time
+	// this runs, so reaching the handler at all is the answer. The web UI calls it
+	// on load to find out whether a stored token still works.
+	fuego.Get(api, "/auth/session", func(ctx fuego.ContextNoBody) (SessionDTO, error) {
+		return SessionDTO{Authenticated: true}, nil
+	}, fuego.OptionOperationID("getSession"))
 
 	fuego.Post(api, "/auth/password", func(ctx fuego.ContextWithBody[ChangePasswordInput]) (TokenDTO, error) {
 		body, err := ctx.Body()

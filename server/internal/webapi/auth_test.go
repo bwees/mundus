@@ -261,3 +261,50 @@ func TestNothingIsControllableBeforeSetup(t *testing.T) {
 		}
 	}
 }
+
+// The web UI calls this on load to decide whether a stored token is still good,
+// so it has to answer 401 for a stale one rather than succeeding.
+func TestSessionEndpointReflectsTokenValidity(t *testing.T) {
+	srv, d := testServer(t)
+
+	rec := httptest.NewRecorder()
+	srv.Mux.ServeHTTP(rec, httptest.NewRequest("GET", "/api/auth/session", nil))
+	if rec.Code != http.StatusUnauthorized {
+		t.Errorf("no token: got %d, want 401", rec.Code)
+	}
+
+	rec = httptest.NewRecorder()
+	req := httptest.NewRequest("GET", "/api/auth/session", nil)
+	req.Header.Set("Authorization", "Bearer not.a.real.token")
+	srv.Mux.ServeHTTP(rec, req)
+	if rec.Code != http.StatusUnauthorized {
+		t.Errorf("garbage token: got %d, want 401", rec.Code)
+	}
+
+	token, err := d.Security.GenerateToken(jwt.MapClaims{"sub": "admin"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	rec = httptest.NewRecorder()
+	req = httptest.NewRequest("GET", "/api/auth/session", nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	srv.Mux.ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Errorf("valid token: got %d, want 200", rec.Code)
+	}
+
+	// A token signed by a different server instance, which is what every mundus
+	// restart produces, since the signing key only lives in memory.
+	other := fuego.NewSecurity()
+	stale, err := other.GenerateToken(jwt.MapClaims{"sub": "admin"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	rec = httptest.NewRecorder()
+	req = httptest.NewRequest("GET", "/api/auth/session", nil)
+	req.Header.Set("Authorization", "Bearer "+stale)
+	srv.Mux.ServeHTTP(rec, req)
+	if rec.Code != http.StatusUnauthorized {
+		t.Errorf("token from a previous run: got %d, want 401", rec.Code)
+	}
+}

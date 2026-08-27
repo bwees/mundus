@@ -512,6 +512,18 @@
 				],
 				"type": "object"
 			},
+			"SessionDTO": {
+				"description": "SessionDTO schema",
+				"properties": {
+					"authenticated": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"authenticated"
+				],
+				"type": "object"
+			},
 			"Setting": {
 				"properties": {
 					"default": {
@@ -874,7 +886,7 @@
 		},
 		"/api/auth/password": {
 			"post": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerAuth.func4`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerAuth.func5`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "changePassword",
 				"parameters": [
 					{
@@ -907,6 +919,72 @@
 							"application/xml": {
 								"schema": {
 									"$ref": "#/components/schemas/TokenDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func5",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/auth/session": {
+			"get": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerAuth.func4`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "getSession",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SessionDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/SessionDTO"
 								}
 							}
 						},

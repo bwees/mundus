@@ -46,6 +46,9 @@ export type ChangePasswordInput = {
     current_password: string;
     new_password: string;
 };
+export type SessionDto = {
+    authenticated: boolean;
+};
 export type AuthStatusDto = {
     setup_required: boolean;
 };
@@ -230,7 +233,7 @@ export function login(credentialsInput: CredentialsInput, { accept }: {
     })));
 }
 /**
- * func4
+ * func5
  */
 export function changePassword(changePasswordInput: ChangePasswordInput, { accept }: {
     accept?: string;
@@ -252,6 +255,28 @@ export function changePassword(changePasswordInput: ChangePasswordInput, { accep
             Accept: accept
         })
     })));
+}
+/**
+ * func4
+ */
+export function getSession({ accept }: {
+    accept?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SessionDto;
+    } | {
+        status: 400;
+        data: HttpError;
+    } | {
+        status: 500;
+        data: HttpError;
+    }>("/api/auth/session", {
+        ...opts,
+        headers: oazapfts.mergeHeaders(opts?.headers, {
+            Accept: accept
+        })
+    }));
 }
 /**
  * func2
