@@ -1,15 +1,26 @@
-import { getAuthStatus, loadToken, login, setToken, setupAuth } from '$lib/sdk';
+import { getAuthStatus, getSession, loadToken, login, setToken, setupAuth } from '$lib/sdk';
 
 class AuthManager {
 	authenticated = $state(false);
-	private loaded = false;
+	private checked = false;
 
-	// A token in storage is only a claim; the server decides. The status call is
-	// unauthenticated, so a stale token surfaces as a failed probe, not a hang.
+	// A token in storage proves nothing: the server signs with a key held only in
+	// memory, so every restart invalidates it. Ask the server instead of trusting
+	// localStorage, and drop a token it rejects.
 	async load(): Promise<boolean> {
-		if (!this.loaded) {
-			this.authenticated = loadToken() !== null;
-			this.loaded = true;
+		if (this.checked) return this.authenticated;
+		this.checked = true;
+
+		if (loadToken() === null) {
+			this.authenticated = false;
+			return false;
+		}
+		try {
+			await getSession();
+			this.authenticated = true;
+		} catch {
+			setToken(null);
+			this.authenticated = false;
 		}
 		return this.authenticated;
 	}
@@ -26,20 +37,20 @@ class AuthManager {
 		const { token } = await login({ password });
 		setToken(token);
 		this.authenticated = true;
-		this.loaded = true;
+		this.checked = true;
 	}
 
 	async setup(password: string) {
 		const { token } = await setupAuth({ password });
 		setToken(token);
 		this.authenticated = true;
-		this.loaded = true;
+		this.checked = true;
 	}
 
 	logout() {
 		setToken(null);
 		this.authenticated = false;
-		this.loaded = true;
+		this.checked = true;
 	}
 }
 

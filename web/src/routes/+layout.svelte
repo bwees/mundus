@@ -2,12 +2,23 @@
 	import '../app.css';
 	import { ModeWatcher } from 'mode-watcher';
 	import { Toaster } from '$lib/components/ui/sonner';
-	import { loadToken } from '$lib/sdk';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
+	import { auth } from '$lib/managers/auth.svelte';
+	import { loadToken, setUnauthorizedHandler } from '$lib/sdk';
 
 	let { children } = $props();
 
 	// Restore the bearer token before any load function fires a request.
 	loadToken();
+
+	// Any request rejected mid-session lands here, not just the one on page load.
+	setUnauthorizedHandler(() => {
+		auth.logout();
+		if (page.url.pathname !== '/login' && page.url.pathname !== '/setup') {
+			goto('/login');
+		}
+	});
 </script>
 
 <ModeWatcher />
