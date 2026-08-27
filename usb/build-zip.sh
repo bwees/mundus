@@ -35,7 +35,8 @@ STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 ROOT="$STAGE/develop_tools"
 INSTALL="$ROOT/opt/wlab/sweepbot/mundus"
-mkdir -p "$INSTALL/web" "$ROOT/etc/init.d" "$ROOT/etc/sudoers.d"
+mkdir -p "$INSTALL/web" "$ROOT/etc/init.d" "$ROOT/etc/sudoers.d" \
+  "$ROOT/etc/systemd/system/multi-user.target.wants"
 
 cp "$BIN" "$INSTALL/mundus"
 cp -R "$WEB/." "$INSTALL/web/"
@@ -91,16 +92,42 @@ esac
 exit 0
 EOS
 
+# systemd is PID 1 here and there is no sysv-generator, so an init.d script on
+# its own never runs. Every vendor SXX script has a unit that execs it; ours
+# needs the same, plus the .wants entry that enables it.
+cat > "$ROOT/etc/systemd/system/mundus.service" <<'EOU'
+[Unit]
+Description=mundus local control server
+After=app.service network.target
+Wants=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=root
+ExecStart=/etc/init.d/S99mundus
+
+[Install]
+WantedBy=multi-user.target
+EOU
+
+# Must be a symlink. A regular file here leaves the unit reachable by name but
+# not wanted by multi-user.target, so it never starts at boot. zip -y below
+# preserves it, and S99developer's cp -ar carries it into the overlay.
+ln -sfn ../mundus.service \
+  "$ROOT/etc/systemd/system/multi-user.target.wants/mundus.service"
+
 printf 'wlab ALL=(ALL) NOPASSWD:ALL\n' > "$ROOT/etc/sudoers.d/wlab-nopasswd"
 
 chmod 755 "$INSTALL/mundus" "$ROOT/etc/init.d/S99mundus"
-chmod 644 "$INSTALL/mundus.json" "$ROOT/develop_version"
+chmod 644 "$INSTALL/mundus.json" "$ROOT/develop_version" \
+  "$ROOT/etc/systemd/system/mundus.service"
 chmod 440 "$ROOT/etc/sudoers.d/wlab-nopasswd"
 
 rm -f "$OUT_ZIP"
 mkdir -p "$(dirname "$OUT_ZIP")"
 OUT_ZIP="$(cd "$(dirname "$OUT_ZIP")" && pwd)/$(basename "$OUT_ZIP")"
-( cd "$STAGE" && zip -r -X -q "$OUT_ZIP" develop_tools )
+( cd "$STAGE" && zip -r -X -y -q "$OUT_ZIP" develop_tools )
 
 echo ">> built $OUT_ZIP ($(du -h "$OUT_ZIP" | cut -f1))"
 echo ">> installs mundus to /opt/wlab/sweepbot/mundus; SSH stays off (enable it in the web UI)."

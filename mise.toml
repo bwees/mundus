@@ -47,6 +47,9 @@ description = "Build everything and deploy binary + web to the device"
 depends = ["dist"]
 run = [
   "ssh $DEVICE 'sudo mkdir -p $DEVICE_DIR/web && sudo chown -R wlab $DEVICE_DIR'",
-  "ssh $DEVICE 'cat > $DEVICE_DIR/mundus' < dist/mundus && ssh $DEVICE 'chmod +x $DEVICE_DIR/mundus'",
-  "tar -C dist/web -czf - . | ssh $DEVICE 'rm -rf $DEVICE_DIR/web/* && tar -C $DEVICE_DIR/web -xzf -'",
+  # Staged then renamed: Linux refuses to open a running executable for writing,
+  # so writing straight to $DEVICE_DIR/mundus fails with ETXTBSY.
+  "ssh $DEVICE 'cat > $DEVICE_DIR/mundus.new && chmod +x $DEVICE_DIR/mundus.new' < dist/mundus",
+  "tar -C dist/web -czf - . | ssh $DEVICE 'rm -rf $DEVICE_DIR/web.new && mkdir -p $DEVICE_DIR/web.new && tar -C $DEVICE_DIR/web.new -xzf -'",
+  "ssh $DEVICE 'set -e; D=$DEVICE_DIR; pkill -f \"$D/mundus\" || true; sleep 2; mv $D/mundus.new $D/mundus; rm -rf $D/web.old; [ -d $D/web ] && mv $D/web $D/web.old; mv $D/web.new $D/web; setsid $D/mundus -config $D/mundus.json </dev/null >>$D/mundus.log 2>&1 & sleep 5; pgrep -f \"$D/mundus -config\" >/dev/null && echo deployed && exit 0; echo FAILED; tail -20 $D/mundus.log; exit 1'",
 ]
