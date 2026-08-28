@@ -1456,7 +1456,7 @@
 		},
 		"/api/dock": {
 			"post": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.cmd.func20`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.cmd.func1`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "dock",
 				"parameters": [
 					{
@@ -1514,7 +1514,7 @@
 						"description": "Internal Server Error _(panics)_"
 					}
 				},
-				"summary": "func20",
+				"summary": "func1",
 				"tags": [
 					"api"
 				]
@@ -1522,7 +1522,7 @@
 		},
 		"/api/locate": {
 			"post": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.cmd.func28`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.cmd.func1`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "locate",
 				"parameters": [
 					{
@@ -1580,7 +1580,7 @@
 						"description": "Internal Server Error _(panics)_"
 					}
 				},
-				"summary": "func28",
+				"summary": "func1",
 				"tags": [
 					"api"
 				]
@@ -2116,7 +2116,7 @@
 		},
 		"/api/pause": {
 			"post": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.cmd.func22`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.cmd.func1`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "pause",
 				"parameters": [
 					{
@@ -2174,7 +2174,7 @@
 						"description": "Internal Server Error _(panics)_"
 					}
 				},
-				"summary": "func22",
+				"summary": "func1",
 				"tags": [
 					"api"
 				]
@@ -2182,7 +2182,7 @@
 		},
 		"/api/resume": {
 			"post": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.cmd.func24`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.cmd.func1`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "resume",
 				"parameters": [
 					{
@@ -2240,7 +2240,7 @@
 						"description": "Internal Server Error _(panics)_"
 					}
 				},
-				"summary": "func24",
+				"summary": "func1",
 				"tags": [
 					"api"
 				]
@@ -2604,7 +2604,7 @@
 		},
 		"/api/stop": {
 			"post": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.cmd.func26`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.cmd.func1`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "stop",
 				"parameters": [
 					{
@@ -2662,7 +2662,7 @@
 						"description": "Internal Server Error _(panics)_"
 					}
 				},
-				"summary": "func26",
+				"summary": "func1",
 				"tags": [
 					"api"
 				]

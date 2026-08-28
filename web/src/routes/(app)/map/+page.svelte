@@ -82,7 +82,7 @@
 	let viewBox = $derived(map ? `0 0 ${map.width} ${map.height}` : '0 0 100 100');
 
 	async function load() {
-		try { map = await api.getMap(); } catch (e) { toast.error(`Failed to load map: ${e}`); }
+		try { map = await api.getMap(); } catch (e) { toast.error(api.apiErrorMessage(e, 'Failed to load map')); }
 	}
 
 	function pick(id: string, e: MouseEvent) {
@@ -140,7 +140,7 @@
 	async function run(label: string, fn: () => Promise<unknown>, ok: string) {
 		busy = true;
 		try { await fn(); toast.success(ok); selected = {}; await load(); }
-		catch (e) { toast.error(`${label} failed: ${e}`); }
+		catch (e) { toast.error(`${label} failed: ${api.apiErrorMessage(e)}`); }
 		finally { busy = false; }
 	}
 

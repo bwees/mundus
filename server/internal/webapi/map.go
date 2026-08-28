@@ -34,7 +34,7 @@ func registerMap(api *fuego.Server, d Deps) {
 			}
 		}
 		if !found {
-			return OK{}, fmt.Errorf("room %q not found", body.ID)
+			return OK{}, badRequest("room %q not found", body.ID)
 		}
 		return applyLabels(d, l)
 	}, fuego.OptionOperationID("renameRoom"))
@@ -61,7 +61,7 @@ func registerMap(api *fuego.Server, d Deps) {
 			return OK{}, err
 		}
 		if len(body.Geometry) < 6 {
-			return OK{}, fmt.Errorf("zone needs at least 3 points")
+			return OK{}, badRequest("zone needs at least 3 points")
 		}
 		m, err := robotapi.ReadMarkers(d.MapDir)
 		if err != nil {
@@ -105,7 +105,7 @@ func registerMap(api *fuego.Server, d Deps) {
 			}
 		}
 		if !found {
-			return OK{}, fmt.Errorf("zone %q not found", body.ID)
+			return OK{}, badRequest("zone %q not found", body.ID)
 		}
 		return applyMarkers(d, m)
 	}, fuego.OptionOperationID("updateZone"))
@@ -129,11 +129,17 @@ func registerMap(api *fuego.Server, d Deps) {
 			out = append(out, mk)
 		}
 		if !found {
-			return OK{}, fmt.Errorf("zone %q not found", body.ID)
+			return OK{}, badRequest("zone %q not found", body.ID)
 		}
 		m.Data = out
 		return applyMarkers(d, m)
 	}, fuego.OptionOperationID("deleteZone"))
+}
+
+// badRequest marks a failure the caller caused (unknown room, a split line that
+// misses the room) so the UI gets a 400 with the reason instead of a bare 500.
+func badRequest(format string, a ...any) error {
+	return fuego.BadRequestError{Detail: fmt.Sprintf(format, a...)}
 }
 
 func defaultZoneName(kind string) string {
@@ -238,7 +244,7 @@ func applyLabels(d Deps, l robotapi.Labels) (OK, error) {
 
 func mergeRooms(d Deps, in MergeRoomsInput) (OK, error) {
 	if len(in.IDs) < 2 {
-		return OK{}, fmt.Errorf("merge needs at least two rooms")
+		return OK{}, badRequest("merge needs at least two rooms")
 	}
 	l, err := robotapi.ReadLabels(d.MapDir)
 	if err != nil {
@@ -262,7 +268,7 @@ func mergeRooms(d Deps, in MergeRoomsInput) (OK, error) {
 		}
 	}
 	if len(picked) != len(in.IDs) {
-		return OK{}, fmt.Errorf("some rooms not found")
+		return OK{}, badRequest("some rooms not found")
 	}
 	masks := make([]*mapgeo.Mask, len(picked))
 	for i, r := range picked {
@@ -270,7 +276,7 @@ func mergeRooms(d Deps, in MergeRoomsInput) (OK, error) {
 	}
 	geom := mapgeo.Contour(mapgeo.Union(masks...), t)
 	if len(geom) < 6 {
-		return OK{}, fmt.Errorf("merge produced empty geometry")
+		return OK{}, badRequest("merge produced empty geometry")
 	}
 	survivor := picked[0]
 	name := in.Name
@@ -304,13 +310,13 @@ func splitRoom(d Deps, in SplitRoomInput) (OK, error) {
 		}
 	}
 	if target == nil {
-		return OK{}, fmt.Errorf("room %q not found", in.ID)
+		return OK{}, badRequest("room %q not found", in.ID)
 	}
 	left, right := mapgeo.SplitByLine(mapgeo.Rasterize(target.Geometry, t), in.Line[0], in.Line[1], in.Line[2], in.Line[3], t)
 	lg := mapgeo.Contour(left, t)
 	rg := mapgeo.Contour(right, t)
 	if len(lg) < 6 || len(rg) < 6 {
-		return OK{}, fmt.Errorf("split line does not divide the room into two parts")
+		return OK{}, badRequest("split line does not divide the room into two parts")
 	}
 	keep := robotapi.RoomLabel{
 		ColorType: target.ColorType, Geometry: lg, Graph: []int{},

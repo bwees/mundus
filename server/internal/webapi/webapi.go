@@ -3,6 +3,8 @@
 package webapi
 
 import (
+	"context"
+	"errors"
 	"log/slog"
 	"net/http"
 	"os"
@@ -54,10 +56,22 @@ func toMode(m ModeDTO) robotapi.CleanMode {
 	return robotapi.CleanMode{Type: m.Type, FanLevel: m.FanLevel, WaterLevel: m.WaterLevel, Times: m.Times}
 }
 
+// fuego's default handler hands a plain error straight to the JSON serializer,
+// which marshals it to "{}" — the client gets a bare 500 with no message. Coerce
+// anything untyped into an HTTPError whose Detail carries the text.
+func errorHandler(ctx context.Context, err error) error {
+	var withStatus fuego.ErrorWithStatus
+	if errors.As(err, &fuego.HTTPError{}) || errors.As(err, &withStatus) {
+		return fuego.HandleHTTPError(ctx, err)
+	}
+	return fuego.HandleHTTPError(ctx, fuego.HTTPError{Err: err, Detail: err.Error()})
+}
+
 func NewServer(d Deps) *fuego.Server {
 	s := fuego.NewServer(
 		fuego.WithAddr(d.Addr),
 		fuego.WithSerializer(fuego.SendJSON),
+		fuego.WithEngineOptions(fuego.WithErrorHandler(errorHandler)),
 	)
 	s.OpenAPI.Config.JSONFilePath = "openapi.json"
 	s.OpenAPI.Config.SpecURL = "/api/openapi.json"

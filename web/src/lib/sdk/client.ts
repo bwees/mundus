@@ -418,7 +418,7 @@ export function setMqttConfig(mqttConfigInput: MqttConfigInput, { accept }: {
     })));
 }
 /**
- * func20
+ * func1
  */
 export function dock({ accept }: {
     accept?: string;
@@ -441,7 +441,7 @@ export function dock({ accept }: {
     }));
 }
 /**
- * func28
+ * func1
  */
 export function locate({ accept }: {
     accept?: string;
@@ -630,7 +630,7 @@ export function updateZone(updateZoneInput: UpdateZoneInput, { accept }: {
     })));
 }
 /**
- * func22
+ * func1
  */
 export function pause({ accept }: {
     accept?: string;
@@ -653,7 +653,7 @@ export function pause({ accept }: {
     }));
 }
 /**
- * func24
+ * func1
  */
 export function resume({ accept }: {
     accept?: string;
@@ -790,7 +790,7 @@ export function getState({ accept }: {
     }));
 }
 /**
- * func26
+ * func1
  */
 export function stop({ accept }: {
     accept?: string;
