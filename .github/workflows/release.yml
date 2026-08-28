@@ -1,9 +1,22 @@
 name: release
 
+# Never triggered by a tag push. release-please creates tags with GITHUB_TOKEN,
+# and GitHub deliberately does not fire workflows for events raised by that
+# token, so a `push: tags` trigger here would silently never run. release-please
+# calls this workflow directly instead.
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_call:
+    inputs:
+      tag:
+        description: Tag to build and attach assets to
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to build and attach assets to (e.g. v0.1.0)
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -13,6 +26,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
 
       - uses: actions/setup-go@v5
         with:
@@ -28,20 +43,30 @@ jobs:
           cache: pnpm
           cache-dependency-path: web/pnpm-lock.yaml
 
+      # ci.yml has already run on main, but a release is the one artifact users
+      # install unattended, so it is worth re-checking the exact tagged tree.
+      - name: Test server
+        working-directory: server
+        run: |
+          go vet ./...
+          go test ./...
+
       - name: Build web UI
         working-directory: web
         run: |
           pnpm install --frozen-lockfile
+          pnpm run check
           pnpm run build
 
       - name: Build server (linux/arm64)
         working-directory: server
         env:
+          TAG: ${{ inputs.tag }}
           GOOS: linux
           GOARCH: arm64
           CGO_ENABLED: '0'
         run: |
-          go build -ldflags "-s -w -X main.version=${GITHUB_REF_NAME}" -o ../dist/mundus-linux-arm64 .
+          go build -ldflags "-s -w -X main.version=$TAG" -o ../dist/mundus-linux-arm64 .
 
       - name: Package assets
         run: |
@@ -51,15 +76,18 @@ jobs:
       - name: Build mundus installer USB zip
         run: ./usb/build-zip.sh --bin dist/mundus-linux-arm64 --web web/build --out dist/develop-tools-mundus.zip
 
+      # The updater refuses a release whose checksum entry is missing, so this
+      # step is what makes the release installable rather than just present.
       - name: Checksums
         run: |
           cd dist
           sha256sum mundus-linux-arm64 web.tar.gz develop-tools-mundus.zip > SHA256SUMS
           cat SHA256SUMS
 
-      - name: Create GitHub Release
+      - name: Attach assets to the release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ inputs.tag }}
           files: |
             dist/mundus-linux-arm64
             dist/web.tar.gz

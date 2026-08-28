@@ -1,0 +1,38 @@
+name: release-please
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      released: ${{ steps.release.outputs.release_created }}
+      tag: ${{ steps.release.outputs.tag_name }}
+    steps:
+      # Configured by release-please-config.json rather than a release-type input,
+      # because skip-changelog has no equivalent input and only exists in the
+      # config file. The manifest is what release-please bumps in the release PR.
+      - uses: googleapis/release-please-action@v4
+        id: release
+
+  # Called rather than triggered. release-please publishes the release using
+  # GITHUB_TOKEN, and GitHub does not raise workflow-triggering events for that
+  # token, so nothing listening for `push: tags` or `release: published` would
+  # ever fire. Running the build in this same workflow is what gets the assets
+  # attached, and without them the release is uninstallable: the updater
+  # requires mundus-linux-arm64, web.tar.gz and SHA256SUMS.
+  assets:
+    needs: release-please
+    if: needs.release-please.outputs.released == 'true'
+    permissions:
+      contents: write
+    uses: ./.github/workflows/release.yml
+    with:
+      tag: ${{ needs.release-please.outputs.tag }}
