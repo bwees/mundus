@@ -11,10 +11,21 @@ artifacts of any CI run on `main`.
 The flash drive must be setup in a specific way for the installer to work:
 
 1. An MBR partition table with one primary FAT32 partition enumerating as
-   `/dev/sda1`. Any other filesystem or disk layout will fail to copy
-2. `/developer/` must contain exactly one file, the zip. Any extra files/directories cause the copy to fail, including macOS `._*`, `.Trashes` and
-   `.Spotlight-V100`, and Windows `System Volume Information`. Formatting and
-   authoring on Linux or Windows avoids most of this.
+   `/dev/sda1`. Any other filesystem or disk layout will fail to copy.
+   - macOS
+      - You can use Disk Utility to format your disk as "FAT" (aka FAT32) and select Master Boot Record
+         <img width="493" height="270" alt="image" src="https://github.com/user-attachments/assets/cbd00a99-71e3-40b8-bfac-5137a6627aed" />
+   - Windows
+      - Use [Rufus](https://rufus.ie/en/)
+      - Select your USB drive under Device.
+      - For Boot selection, choose Non bootable if you just want a formatted data drive.
+      - Set Partition scheme to MBR.
+      - Set File system to FAT32.
+      - Click START.
+   - Linux - use whatever your favorite tool is :)
+2. `/developer/` must contain exactly one file, the zip. Any extra files/directories cause the copy to fail. macOS may sometimes mut dotfiles in the directory. Before ejecting, run ```dot_clean -m /Volumes/<YOUR DRIVE NAME>``` to clean the drive
+
+Your drive contents should look like this before plugging it into 
 
 ```
 <FAT32 sda1>/
