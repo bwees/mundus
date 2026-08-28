@@ -32,13 +32,15 @@ Home Assistant can integrate with Mundus via MQTT. Enter your MQTT server and cr
 
 By default, Mundus does not block cloud connectivity. You can continue to use the SwitchBot app and cloud services alongside Mundus if you choose. 
 
-You can block the robot's cloud connectivity entirely via the system tab in the web UI. This will prevent the robot from connecting to SwitchBot's cloud services, and it will operate entirely locally.
+You can block the robot's cloud connectivity entirely via the system tab in the web UI. This will prevent the robot from connecting to SwitchBot's cloud services, and it will operate entirely locally. 
+
+It is recommended to turn off cloud connectivity to prevent any OTA updates from breaking Mundus or the APIs it utilizies.
 
 ## Updates
 
 <img width="646" height="154" alt="image" src="https://github.com/user-attachments/assets/47c1444b-a063-43f7-b6c0-49f23d1c31ab" />
 
-There is a "Check for Updates" button in the web UI. Mundus checks GitHub releases for a new release, downloads it, and applies it on the next boot. It does not check for updates automatically.
+There is a "Check for Updates" button in the web UI. Mundus checks GitHub releases for a new release, downloads it, and applies it. It does not check for updates automatically.
 
 ### Disclaimer
 
