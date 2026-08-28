@@ -30,10 +30,6 @@ var cloudServices = []string{
 	"upload_image.service",
 }
 
-// parkedSuffixes are checked when restoring, so a cert parked by an older tool
-// (s20ctl) still re-enables cleanly.
-var parkedSuffixes = []string{cloudParked, ".s20ctl-disabled"}
-
 type CloudStatus struct {
 	Enabled   bool `json:"enabled"`
 	Connected bool `json:"connected"`
@@ -41,14 +37,7 @@ type CloudStatus struct {
 }
 
 func (s *System) CloudStatus() CloudStatus {
-	present := fileExists(cloudCert)
-	parked := false
-	for _, suf := range parkedSuffixes {
-		if fileExists(cloudCert + suf) {
-			parked = true
-		}
-	}
-	st := CloudStatus{Enabled: present && !parked}
+	st := CloudStatus{Enabled: fileExists(cloudCert) && !fileExists(cloudCert+cloudParked)}
 	if out, err := s.robot.Raw("/cc/iot/cloud_conn/is_connect"); err == nil {
 		st.Connected = strings.HasPrefix(strings.TrimSpace(out), "true")
 	}
@@ -61,11 +50,9 @@ func (s *System) CloudStatus() CloudStatus {
 func (s *System) SetCloudEnabled(enabled bool) error {
 	for _, base := range []string{cloudCert, cloudKey} {
 		if enabled {
-			for _, suf := range parkedSuffixes {
-				if fileExists(base+suf) && !fileExists(base) {
-					if err := os.Rename(base+suf, base); err != nil {
-						return fmt.Errorf("restore %s: %w", base, err)
-					}
+			if fileExists(base+cloudParked) && !fileExists(base) {
+				if err := os.Rename(base+cloudParked, base); err != nil {
+					return fmt.Errorf("restore %s: %w", base, err)
 				}
 			}
 		} else if fileExists(base) {
