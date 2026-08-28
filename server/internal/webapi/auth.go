@@ -8,6 +8,18 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// sessionCookie holds the bearer token so the browser attaches it on its own
+// and no script ever touches it.
+//
+// SameSite=Strict is load-bearing. Sending the token in a header used to make
+// CSRF impossible, because a cross-origin page cannot set one. A cookie the
+// browser sends automatically gives that back, and Strict is what takes it
+// away again: the browser will not attach this on any cross-site request.
+//
+// Secure is deliberately unset. The device serves plain HTTP over the LAN, and
+// a Secure cookie would simply never be stored, so nobody could log in.
+const sessionCookie = "mundus_session"
+
 type AuthStatusDTO struct {
 	SetupRequired bool `json:"setup_required"`
 }
@@ -35,6 +47,9 @@ var publicRoutes = map[string]bool{
 	"/api/auth/status": true,
 	"/api/auth/setup":  true,
 	"/api/auth/login":  true,
+	// Clearing the cookie must work even once the token inside it has expired,
+	// otherwise a stale session can never be shaken off.
+	"/api/auth/logout": true,
 }
 
 // requireAuth rejects any /api request without a valid bearer token. Tokens are
@@ -49,6 +64,11 @@ func requireAuth(d Deps) func(http.Handler) http.Handler {
 			}
 			token := fuego.TokenFromHeader(r)
 			if token == "" {
+				if c, err := r.Cookie(sessionCookie); err == nil {
+					token = c.Value
+				}
+			}
+			if token == "" {
 				http.Error(w, `{"error":"authentication required"}`, http.StatusUnauthorized)
 				return
 			}
@@ -61,11 +81,21 @@ func requireAuth(d Deps) func(http.Handler) http.Handler {
 	}
 }
 
-func (d Deps) issueToken() (TokenDTO, error) {
+// issueToken mints a token, stores it as the session cookie, and also returns
+// it so a script can use the Authorization header instead.
+func issueToken(d Deps, w http.ResponseWriter) (TokenDTO, error) {
 	token, err := d.Security.GenerateToken(jwt.MapClaims{"sub": "admin"})
 	if err != nil {
 		return TokenDTO{}, err
 	}
+	http.SetCookie(w, &http.Cookie{
+		Name:     sessionCookie,
+		Value:    token,
+		Path:     "/",
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		MaxAge:   int(d.Security.ExpiresInterval.Seconds()),
+	})
 	return TokenDTO{Token: token}, nil
 }
 
@@ -83,7 +113,7 @@ func registerAuth(api *fuego.Server, d Deps) {
 			return TokenDTO{}, fuego.BadRequestError{Title: err.Error()}
 		}
 		d.Log.Info("admin password configured")
-		return d.issueToken()
+		return issueToken(d, ctx.Response())
 	}, fuego.OptionOperationID("setupAuth"))
 
 	fuego.Post(api, "/auth/login", func(ctx fuego.ContextWithBody[CredentialsInput]) (TokenDTO, error) {
@@ -95,8 +125,17 @@ func registerAuth(api *fuego.Server, d Deps) {
 			d.Log.Warn("failed login attempt")
 			return TokenDTO{}, fuego.UnauthorizedError{Title: "incorrect password"}
 		}
-		return d.issueToken()
+		return issueToken(d, ctx.Response())
 	}, fuego.OptionOperationID("login"))
+
+	fuego.Post(api, "/auth/logout", func(ctx fuego.ContextNoBody) (OK, error) {
+		// The cookie is HttpOnly, so only the server can clear it.
+		ctx.SetCookie(http.Cookie{
+			Name: sessionCookie, Value: "", Path: "/",
+			HttpOnly: true, SameSite: http.SameSiteStrictMode, MaxAge: -1,
+		})
+		return OK{OK: true}, nil
+	}, fuego.OptionOperationID("logout"))
 
 	// Deliberately trivial: the guard has already validated the token by the time
 	// this runs, so reaching the handler at all is the answer. The web UI calls it
@@ -114,6 +153,6 @@ func registerAuth(api *fuego.Server, d Deps) {
 			return TokenDTO{}, fuego.BadRequestError{Title: err.Error()}
 		}
 		d.Log.Info("admin password changed")
-		return d.issueToken()
+		return issueToken(d, ctx.Response())
 	}, fuego.OptionOperationID("changePassword"))
 }

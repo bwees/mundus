@@ -42,6 +42,9 @@ export type HttpError = {
     /** URL of the error type. Can be used to lookup the error in a documentation */
     "type"?: string;
 };
+export type Ok = {
+    ok: boolean;
+};
 export type ChangePasswordInput = {
     current_password: string;
     new_password: string;
@@ -61,9 +64,6 @@ export type ModeDto = {
 export type CleanRequest = {
     mode: ModeDto;
     rooms: string[] | null;
-};
-export type Ok = {
-    ok: boolean;
 };
 export type MqttConfigDto = {
     base_topic: string;
@@ -233,7 +233,30 @@ export function login(credentialsInput: CredentialsInput, { accept }: {
     })));
 }
 /**
- * func5
+ * func4
+ */
+export function logout({ accept }: {
+    accept?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Ok;
+    } | {
+        status: 400;
+        data: HttpError;
+    } | {
+        status: 500;
+        data: HttpError;
+    }>("/api/auth/logout", {
+        ...opts,
+        method: "POST",
+        headers: oazapfts.mergeHeaders(opts?.headers, {
+            Accept: accept
+        })
+    }));
+}
+/**
+ * func6
  */
 export function changePassword(changePasswordInput: ChangePasswordInput, { accept }: {
     accept?: string;
@@ -257,7 +280,7 @@ export function changePassword(changePasswordInput: ChangePasswordInput, { accep
     })));
 }
 /**
- * func4
+ * func5
  */
 export function getSession({ accept }: {
     accept?: string;

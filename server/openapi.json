@@ -884,9 +884,75 @@
 				]
 			}
 		},
+		"/api/auth/logout": {
+			"post": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerAuth.func4`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "logout",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OK"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func4",
+				"tags": [
+					"api"
+				]
+			}
+		},
 		"/api/auth/password": {
 			"post": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerAuth.func5`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerAuth.func6`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "changePassword",
 				"parameters": [
 					{
@@ -955,7 +1021,7 @@
 						"description": "Internal Server Error _(panics)_"
 					}
 				},
-				"summary": "func5",
+				"summary": "func6",
 				"tags": [
 					"api"
 				]
@@ -963,7 +1029,7 @@
 		},
 		"/api/auth/session": {
 			"get": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerAuth.func4`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerAuth.func5`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "getSession",
 				"parameters": [
 					{
@@ -1021,7 +1087,7 @@
 						"description": "Internal Server Error _(panics)_"
 					}
 				},
-				"summary": "func4",
+				"summary": "func5",
 				"tags": [
 					"api"
 				]

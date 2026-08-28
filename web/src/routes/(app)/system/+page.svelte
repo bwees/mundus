@@ -44,11 +44,11 @@
 	async function changePassword() {
 		changingPassword = true;
 		try {
-			const { token } = await api.changePassword({
+			// The server reissues the session cookie on the response.
+			await api.changePassword({
 				current_password: currentPassword,
 				new_password: newPassword
 			});
-			api.setToken(token);
 			currentPassword = newPassword = confirmPassword = '';
 			toast.success('Password changed');
 		} catch (e) {

@@ -1,25 +1,19 @@
-import { getAuthStatus, getSession, loadToken, login, setToken, setupAuth } from '$lib/sdk';
+import { getAuthStatus, getSession, login, logout, setupAuth } from '$lib/sdk';
 
 class AuthManager {
 	authenticated = $state(false);
 	private checked = false;
 
-	// A token in storage proves nothing: the server signs with a key held only in
-	// memory, so every restart invalidates it. Ask the server instead of trusting
-	// localStorage, and drop a token it rejects.
+	// The session cookie is HttpOnly, so the only way to know whether we are
+	// signed in is to ask. The server signs tokens with a key held in memory,
+	// so a cookie that survived a restart is already worthless.
 	async load(): Promise<boolean> {
 		if (this.checked) return this.authenticated;
 		this.checked = true;
-
-		if (loadToken() === null) {
-			this.authenticated = false;
-			return false;
-		}
 		try {
 			await getSession();
 			this.authenticated = true;
 		} catch {
-			setToken(null);
 			this.authenticated = false;
 		}
 		return this.authenticated;
@@ -34,23 +28,25 @@ class AuthManager {
 	}
 
 	async login(password: string) {
-		const { token } = await login({ password });
-		setToken(token);
+		await login({ password });
 		this.authenticated = true;
 		this.checked = true;
 	}
 
 	async setup(password: string) {
-		const { token } = await setupAuth({ password });
-		setToken(token);
+		await setupAuth({ password });
 		this.authenticated = true;
 		this.checked = true;
 	}
 
-	logout() {
-		setToken(null);
-		this.authenticated = false;
-		this.checked = true;
+	// Only the server can clear an HttpOnly cookie.
+	async logout() {
+		try {
+			await logout();
+		} finally {
+			this.authenticated = false;
+			this.checked = true;
+		}
 	}
 }
 

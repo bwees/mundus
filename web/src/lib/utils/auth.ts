@@ -16,6 +16,8 @@ export async function requireSetup() {
 }
 
 export async function logoutAndRedirect() {
-	auth.logout();
+	// Await: only the server can clear the HttpOnly cookie, so navigating first
+	// would leave the session alive.
+	await auth.logout();
 	await goto('/login');
 }

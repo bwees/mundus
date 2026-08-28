@@ -308,3 +308,84 @@ func TestSessionEndpointReflectsTokenValidity(t *testing.T) {
 		t.Errorf("token from a previous run: got %d, want 401", rec.Code)
 	}
 }
+
+func cookieNamed(rec *httptest.ResponseRecorder, name string) *http.Cookie {
+	for _, c := range (&http.Response{Header: rec.Header()}).Cookies() {
+		if c.Name == name {
+			return c
+		}
+	}
+	return nil
+}
+
+// The token now travels as a cookie the browser attaches by itself. That is
+// only safe because SameSite=Strict stops it being attached cross-site, which
+// is what previously made CSRF impossible when it rode in a header.
+func TestLoginSetsHardenedSessionCookie(t *testing.T) {
+	srv, _ := testServer(t)
+	if rec := post(t, srv, "/api/auth/setup", `{"password":"owner-password"}`, ""); rec.Code != http.StatusOK {
+		t.Fatalf("setup: %d", rec.Code)
+	}
+
+	rec := post(t, srv, "/api/auth/login", `{"password":"owner-password"}`, "")
+	c := cookieNamed(rec, "mundus_session")
+	if c == nil {
+		t.Fatal("login set no session cookie")
+	}
+	if c.Value == "" {
+		t.Error("session cookie is empty")
+	}
+	if !c.HttpOnly {
+		t.Error("cookie is readable from JavaScript")
+	}
+	if c.SameSite != http.SameSiteStrictMode {
+		t.Errorf("SameSite is %v, want Strict; CSRF is open without it", c.SameSite)
+	}
+	if c.Path != "/" {
+		t.Errorf("cookie path %q, want /", c.Path)
+	}
+	// The device serves plain HTTP, so a Secure cookie would never be stored.
+	if c.Secure {
+		t.Error("cookie is Secure, which stops it being stored over plain HTTP")
+	}
+}
+
+func TestCookieAuthenticatesRequests(t *testing.T) {
+	srv, _ := testServer(t)
+	setup := post(t, srv, "/api/auth/setup", `{"password":"owner-password"}`, "")
+	c := cookieNamed(setup, "mundus_session")
+	if c == nil {
+		t.Fatal("setup set no cookie")
+	}
+
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequest("GET", "/api/auth/session", nil)
+	req.AddCookie(c)
+	srv.Mux.ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Errorf("cookie was not accepted: %d", rec.Code)
+	}
+
+	rec = httptest.NewRecorder()
+	req = httptest.NewRequest("GET", "/api/auth/session", nil)
+	req.AddCookie(&http.Cookie{Name: "mundus_session", Value: "not.a.token"})
+	srv.Mux.ServeHTTP(rec, req)
+	if rec.Code != http.StatusUnauthorized {
+		t.Errorf("garbage cookie accepted: %d", rec.Code)
+	}
+}
+
+func TestLogoutExpiresTheCookie(t *testing.T) {
+	srv, _ := testServer(t)
+	rec := post(t, srv, "/api/auth/logout", "", "")
+	if rec.Code != http.StatusOK {
+		t.Fatalf("logout without a session: %d, want 200", rec.Code)
+	}
+	c := cookieNamed(rec, "mundus_session")
+	if c == nil {
+		t.Fatal("logout set no cookie")
+	}
+	if c.MaxAge >= 0 {
+		t.Errorf("MaxAge is %d, want negative so the browser drops it", c.MaxAge)
+	}
+}

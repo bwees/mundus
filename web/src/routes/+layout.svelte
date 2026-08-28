@@ -5,12 +5,9 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { auth } from '$lib/managers/auth.svelte';
-	import { loadToken, setUnauthorizedHandler } from '$lib/sdk';
+	import { setUnauthorizedHandler } from '$lib/sdk';
 
 	let { children } = $props();
-
-	// Restore the bearer token before any load function fires a request.
-	loadToken();
 
 	// Any request rejected mid-session lands here, not just the one on page load.
 	setUnauthorizedHandler(() => {

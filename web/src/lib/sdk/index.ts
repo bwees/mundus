@@ -3,8 +3,6 @@ import * as client from './client';
 // Same-origin: the Go server serves both the app and /api.
 client.defaults.baseUrl = '';
 
-const TOKEN_KEY = 'mundus.token';
-
 // Routes whose caller deals with its own 401: a wrong password on login/setup,
 // and the session probe, which reports the answer rather than reacting to it.
 // Firing the global handler for those would race a second navigation against
@@ -16,12 +14,7 @@ const SELF_HANDLED = [
 	'/api/auth/session'
 ];
 
-let token: string | null = null;
 let onUnauthorized: (() => void) | null = null;
-
-function applyToken() {
-	client.defaults.headers = token ? { Authorization: `Bearer ${token}` } : {};
-}
 
 function urlOf(input: RequestInfo | URL): string {
 	if (typeof input === 'string') return input;
@@ -29,13 +22,12 @@ function urlOf(input: RequestInfo | URL): string {
 	return input.url;
 }
 
-// Every 401 outside the credential routes means the stored token is no longer
-// good, which happens on every server restart because the signing key only
-// lives in memory. Drop it here so no caller has to remember to.
+// The session rides in an HttpOnly cookie, so there is no token to attach here
+// and nothing for a script to steal. `credentials` is same-origin by default in
+// browsers, but it is set explicitly so the intent survives a refactor.
 client.defaults.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
-	const response = await fetch(input, init);
+	const response = await fetch(input, { ...init, credentials: 'same-origin' });
 	if (response.status === 401 && !SELF_HANDLED.some((r) => urlOf(input).includes(r))) {
-		setToken(null);
 		onUnauthorized?.();
 	}
 	return response;
@@ -43,23 +35,6 @@ client.defaults.fetch = async (input: RequestInfo | URL, init?: RequestInit) => 
 
 export function setUnauthorizedHandler(fn: () => void) {
 	onUnauthorized = fn;
-}
-
-export function loadToken(): string | null {
-	if (token === null && typeof localStorage !== 'undefined') {
-		token = localStorage.getItem(TOKEN_KEY);
-		applyToken();
-	}
-	return token;
-}
-
-export function setToken(next: string | null) {
-	token = next;
-	if (typeof localStorage !== 'undefined') {
-		if (next) localStorage.setItem(TOKEN_KEY, next);
-		else localStorage.removeItem(TOKEN_KEY);
-	}
-	applyToken();
 }
 
 export function apiErrorMessage(error: unknown, fallback = 'Something went wrong. Please try again.'): string {
