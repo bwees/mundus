@@ -18,7 +18,7 @@ The flash drive must be setup in a specific way for the installer to work:
    - Windows
       - Use [Rufus](https://rufus.ie/en/)
       - Select your USB drive under Device.
-      - For Boot selection, choose Non bootable if you just want a formatted data drive.
+      - For Boot selection, choose Non bootable.
       - Set Partition scheme to MBR.
       - Set File system to FAT32.
       - Click START.
