@@ -30,11 +30,9 @@ The SwitchBot S20 has an easily accessible USB-C OTG port on top of it. It can b
 
 <img height="400" alt="image" src="https://github.com/user-attachments/assets/c649b4c7-f7d8-4ccd-9263-a15144af08f4" />
 
-Plug in a USB-C hub into the port and plug your flash drive into that. Turn the robot's switch on and wait.
+Plug in a USB-C hub into the port and plug your flash drive into that. Turn the robot's switch on and wait. You will hear a speaking audio clip (from what I can tell it says "Starting Developer Mode" in Chinese). This audio gets stopped midway for some reason on my robot. 
 
-You will hear a speaking audio clip (from what I can tell it says "Starting Developer Mode" in Chinese). This audio gets stopped midway for some reason on my robot. I waited about 30 seconds then turned the robot off via its power switch. Remove the USB-C hub, place the cover back on, and turn the robot back on.
-
-The mundus web interface will now be accessible at `http://<ROBOT-IP>:8080` once the robot is done booting.
+On a computer, go to the robot's control interface at `http://<ROBOT-IP>:8080`. Keep refreshing until the page loads. **Do not turn off the robot until the page loads with the admin password setup page.** Turning the robot off during this process may put the OS into a state where Mundus cannot be installed without a full factory reset.
 
 ## Build zip locally (developer only)
 
