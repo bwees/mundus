@@ -8,7 +8,7 @@ artifacts of any CI run on `main`.
 
 ## Put it on a drive
 
-Two hard requirements, and both will silently do nothing if you get them wrong.
+The flash drive must be setup in a specific way for the installer to work:
 
 1. An MBR partition table with one primary FAT32 partition enumerating as
    `/dev/sda1`. Any other filesystem or disk layout will fail to copy
@@ -28,7 +28,9 @@ First, turn off the robot via its switch under the magnetic cover.
 
 The SwitchBot S20 has an easily accessible USB-C OTG port on top of it. It can be accessed by prying up the cover around the buttons on top. There are a few clips and it takes some force to remove it. Once removed, you will see a USB-C port exposed on top.
 
-Plug in a USB-C hub into the port and lug your flash drive into that. Turn the robot's switch on and wait.
+<img height="400" alt="image" src="https://github.com/user-attachments/assets/c649b4c7-f7d8-4ccd-9263-a15144af08f4" />
+
+Plug in a USB-C hub into the port and plug your flash drive into that. Turn the robot's switch on and wait.
 
 You will hear a speaking audio clip (from what I can tell it says "Starting Developer Mode" in Chinese). This audio gets stopped midway for some reason on my robot. I waited about 30 seconds then turned the robot off via its power switch. Remove the USB-C hub, place the cover back on, and turn the robot back on.
 
