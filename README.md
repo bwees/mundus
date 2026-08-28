@@ -9,21 +9,34 @@ See the [USB Installer Documentation](usb/README.md) for how to install Mundus v
 
 ## Local Control UI
 
+<div style="flex: 1; flex-direction: row;">
+
+<img height="200" alt="image" src="https://github.com/user-attachments/assets/1d552518-9370-4bf5-adc4-bf626c09d487" />
+<img height="200"  alt="image" src="https://github.com/user-attachments/assets/848dfbd5-541a-4a9f-a244-6d93ba251b70" />
+
+</div>
+
 Mundus offers a local control UI on `http://<ROBOT-IP>:8080` that allows editing all settings, map, zones, local SSH access, MQTT server (for Home Assistant integration), and control. This is accessible after installing the Mundus USB installer and rebooting the robot.
 
 Once Mundus is installed, please set an admin password in the web UI to prevent unauthorized access. 
 
 ## Home Assistant Integration
 
+<img height="300" alt="image" src="https://github.com/user-attachments/assets/e40df809-fc8e-4ee9-a891-b3b22d4dd248" />
+
 Home Assistant can integrate with Mundus via MQTT. Enter your MQTT server and credentials in the Mundus web UI (see above) under the "System" tab. The device will be automatically discovered in Home Assistant.
 
 ## Turning off Cloud Connectivity
+
+<img width="643" height="144" alt="image" src="https://github.com/user-attachments/assets/210a125b-d6e3-4c17-87b9-e997109f41ca" />
 
 By default, Mundus does not block cloud connectivity. You can continue to use the SwitchBot app and cloud services alongside Mundus if you choose. 
 
 You can block the robot's cloud connectivity entirely via the system tab in the web UI. This will prevent the robot from connecting to SwitchBot's cloud services, and it will operate entirely locally.
 
 ## Updates
+
+<img width="646" height="154" alt="image" src="https://github.com/user-attachments/assets/47c1444b-a063-43f7-b6c0-49f23d1c31ab" />
 
 There is a "Check for Updates" button in the web UI. Mundus checks GitHub releases for a new release, downloads it, and applies it on the next boot. It does not check for updates automatically.
 
