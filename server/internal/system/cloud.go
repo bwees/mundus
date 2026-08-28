@@ -1,6 +1,7 @@
 package system
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -16,6 +17,18 @@ const (
 	cloudKey    = "/data/bind/certs/private.key"
 	cloudParked = ".mundus-disabled"
 )
+
+// cloudServices reach SwitchBot on their own, independently of control_center's
+// MQTT link: log/image/recording uploads, the vendor OTA updater and the frp
+// remote-access tunnel. Parking the cert does not touch them, so they are turned
+// off alongside it.
+var cloudServices = []string{
+	"debug_log_push.service",
+	"frpc.service",
+	"update-robotic.service",
+	"upload-recorder.service",
+	"upload_image.service",
+}
 
 // parkedSuffixes are checked when restoring, so a cert parked by an older tool
 // (s20ctl) still re-enables cleanly.
@@ -61,5 +74,28 @@ func (s *System) SetCloudEnabled(enabled bool) error {
 			}
 		}
 	}
-	return nil
+	return s.setCloudServices(enabled)
+}
+
+// setCloudServices toggles the vendor units with enable/disable and never with
+// mask. Their unit files live in /etc/systemd/system, which is an overlayfs
+// lower layer on this device: masking writes a shadow file into the upper, and
+// unmasking would delete it through the merged mount, leaving a whiteout that
+// hides the vendor unit for good. enable/disable only adds or removes the
+// multi-user.target.wants symlink, which the overlay round-trips cleanly.
+//
+// Re-enabled units are left for the next boot rather than started here:
+// update-robotic is a boot-time oneshot and frpc expects a fresh cloud session.
+func (s *System) setCloudServices(enabled bool) error {
+	var errs []error
+	for _, unit := range cloudServices {
+		args := []string{"systemctl", "disable", "--now", unit}
+		if enabled {
+			args = []string{"systemctl", "enable", unit}
+		}
+		if err := s.run("sudo", args...); err != nil {
+			errs = append(errs, err)
+		}
+	}
+	return errors.Join(errs...)
 }
