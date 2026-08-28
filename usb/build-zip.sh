@@ -66,12 +66,18 @@ DIR=/opt/wlab/sweepbot/mundus
 case "$1" in
   start|"")
     rm -f /data/develop_version 2>/dev/null
+    # The USB installer unzips as root, so everything under $DIR arrives
+    # root-owned and mundus -- which runs as wlab -- cannot write its log,
+    # runtime.json or auth.json there (the log redirect below fails outright).
+    chown -R wlab:wlab "$DIR"
     if [ -x "$DIR/mundus" ]; then
+
       # Respawn loop with update rollback. An update points $DIR/mundus at the
       # other slot and leaves a marker naming the previous one; mundus removes
       # the marker once it is serving. If we get here with the marker still
       # present the new build never came up, so switch back. This is plain
       # shell on purpose -- it has to work when the new binary cannot exec.
+      
       su wlab -c "setsid sh -c '
         while true; do
           \"$DIR/mundus\" -config \"$DIR/mundus.json\"
