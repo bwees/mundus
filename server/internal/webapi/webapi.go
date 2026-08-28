@@ -74,6 +74,8 @@ func NewServer(d Deps) *fuego.Server {
 		fuego.WithEngineOptions(fuego.WithErrorHandler(errorHandler)),
 	)
 	s.OpenAPI.Config.JSONFilePath = "openapi.json"
+	// don't try to write the spec unless specifically requested
+	s.OpenAPI.Config.DisableLocalSave = !d.SpecMode
 	s.OpenAPI.Config.SpecURL = "/api/openapi.json"
 	s.OpenAPI.Config.DisableSwaggerUI = true
 	s.OpenAPI.Config.DisableDefaultServer = true
