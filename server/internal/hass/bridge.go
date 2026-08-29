@@ -11,6 +11,7 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 
 	"github.com/bwees/mundus/server/internal/config"
+	"github.com/bwees/mundus/server/internal/pending"
 	"github.com/bwees/mundus/server/internal/robot"
 	"github.com/bwees/mundus/server/internal/robotapi"
 )
@@ -29,10 +30,13 @@ type Bridge struct {
 
 	roomsFn func() []robot.Room
 
-	mu           sync.Mutex
-	mode         robot.CleanMode
-	dryingPend   *bool
-	dryingPendAt time.Time
+	state  *pending.Value[string]
+	drying *pending.Value[bool]
+
+	mu   sync.Mutex
+	mode robot.CleanMode
+
+	bursting atomic.Bool
 }
 
 func New(cfg config.Config, r *robot.Robot, api *robotapi.API, props *robotapi.Properties, rooms func() []robot.Room, log *slog.Logger) *Bridge {
@@ -45,6 +49,8 @@ func New(cfg config.Config, r *robot.Robot, api *robotapi.API, props *robotapi.P
 		log:      log,
 		t:        newTopics(cfg.BaseTopic, cfg.DeviceID),
 		mode:     robot.DefaultCleanMode(),
+		state:    pending.New[string](pendWindow(cfg)),
+		drying:   pending.New[bool](pendWindow(cfg)),
 		reconfig: make(chan config.MQTTSettings, 1),
 	}
 }
@@ -141,25 +147,33 @@ func (b *Bridge) selects() []selectEntity {
 	}
 }
 
+// pendWindow bounds how long an optimistic value survives without the device
+// confirming it: one poll, plus slack for a slow round trip.
+func pendWindow(cfg config.Config) time.Duration { return cfg.PollInterval + 5*time.Second }
+
+// refresh publishes state now and again over the next few seconds, so a
+// command's real effect reaches Home Assistant without waiting for the poll
+// tick. Overlapping refreshes collapse into the one already running.
+func (b *Bridge) refresh() {
+	b.publishState()
+	if !b.bursting.CompareAndSwap(false, true) {
+		return
+	}
+	go func() {
+		defer b.bursting.Store(false)
+		for _, d := range []time.Duration{500 * time.Millisecond, time.Second, 2 * time.Second, 3 * time.Second} {
+			time.Sleep(d)
+			b.publishState()
+		}
+	}()
+}
+
 func (b *Bridge) dryingConfigured() bool {
 	return b.api != nil
 }
 
-// dryingState resolves the mop-drying switch state. The polled work status is
-// authoritative, but a just-issued command is reflected optimistically until the
-// device agrees or a poll-and-slack window elapses.
 func (b *Bridge) dryingState(ws int) string {
-	b.mu.Lock()
-	defer b.mu.Unlock()
-	on := ws == robot.WorkStatusDryingMop
-	if b.dryingPend != nil {
-		if *b.dryingPend == on || time.Since(b.dryingPendAt) > b.cfg.PollInterval+5*time.Second {
-			b.dryingPend = nil
-		} else {
-			on = *b.dryingPend
-		}
-	}
-	if on {
+	if b.drying.Resolve(ws == robot.WorkStatusDryingMop) {
 		return "ON"
 	}
 	return "OFF"
@@ -255,7 +269,7 @@ func (b *Bridge) subscribe() {
 			if err := run(); err != nil {
 				b.log.Error("button failed", "button", name, "err", err)
 			}
-			b.publishState()
+			b.refresh()
 		})
 	}
 	for _, e := range b.selects() {
@@ -305,26 +319,29 @@ func (b *Bridge) handleCommand(_ mqtt.Client, m mqtt.Message) {
 		return
 	}
 	var err error
+	var want string
 	switch cmd {
 	case "start":
-		err = b.api.CleanAll(b.apiMode())
+		err, want = b.api.CleanAll(b.apiMode()), "cleaning"
 	case "pause":
-		err = b.api.Pause()
+		err, want = b.api.Pause(), "paused"
 	case "stop":
-		err = b.api.Stop()
+		err, want = b.api.Stop(), "idle"
 	case "return_to_base":
-		err = b.api.Dock()
+		err, want = b.api.Dock(), "returning"
 	case "locate":
 		err = b.api.Locate()
 	case "clean_spot":
-		err = b.api.CleanSpot(b.apiMode())
+		err, want = b.api.CleanSpot(b.apiMode()), "cleaning"
 	default:
 		err = fmt.Errorf("unknown command %q", cmd)
 	}
 	if err != nil {
 		b.log.Error("command failed", "command", cmd, "err", err)
+	} else if want != "" {
+		b.state.Expect(want)
 	}
-	b.publishState()
+	b.refresh()
 }
 
 func (b *Bridge) handleFanSpeed(_ mqtt.Client, m mqtt.Message) {
@@ -353,12 +370,8 @@ func (b *Bridge) handleMopDrying(_ mqtt.Client, m mqtt.Message) {
 		b.log.Error("mop drying failed", "on", on, "err", err)
 		return
 	}
-	b.mu.Lock()
-	v := on
-	b.dryingPend = &v
-	b.dryingPendAt = time.Now()
-	b.mu.Unlock()
-	b.publishState()
+	b.drying.Expect(on)
+	b.refresh()
 }
 
 // handleSendCommand runs an arbitrary terminal command line, or a structured
@@ -385,9 +398,11 @@ func (b *Bridge) handleSendCommand(_ mqtt.Client, m mqtt.Message) {
 			if b.api != nil {
 				if err := b.api.CleanRooms(ids, b.apiMode()); err != nil {
 					b.log.Error("room clean failed", "ids", ids, "err", err)
+				} else {
+					b.state.Expect("cleaning")
 				}
 			}
-			b.publishState()
+			b.refresh()
 			return
 		case "clean_area", "clean_areas", "zone_clean":
 			polys, err := parsePolygons(wrap.Params)
@@ -398,9 +413,11 @@ func (b *Bridge) handleSendCommand(_ mqtt.Client, m mqtt.Message) {
 			if b.api != nil {
 				if err := b.api.CleanAreas(polys, b.apiMode()); err != nil {
 					b.log.Error("clean_area failed", "err", err)
+				} else {
+					b.state.Expect("cleaning")
 				}
 			}
-			b.publishState()
+			b.refresh()
 			return
 		}
 		b.runRaw(wrap.Command)
@@ -445,8 +462,10 @@ func (b *Bridge) handleCleanSegments(_ mqtt.Client, m mqtt.Message) {
 	}
 	if err := b.api.CleanRooms(ids, b.apiMode()); err != nil {
 		b.log.Error("clean_segments failed", "ids", ids, "err", err)
+	} else {
+		b.state.Expect("cleaning")
 	}
-	b.publishState()
+	b.refresh()
 }
 
 // roomList returns the current room list. It reads from the map labels (via the
@@ -474,7 +493,7 @@ func (b *Bridge) publishState() {
 	}
 	b.publish(b.t.availability, "online", true)
 
-	state := map[string]any{"state": st.HAState}
+	state := map[string]any{"state": b.state.Resolve(st.HAState)}
 	if st.Battery >= 0 {
 		state["battery_level"] = st.Battery
 	}
