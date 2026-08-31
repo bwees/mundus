@@ -30,7 +30,8 @@ type ModeDTO struct {
 // Empty Rooms means whole-house.
 type CleanRequest struct {
 	Rooms []string `json:"rooms"`
-	Mode  ModeDTO  `json:"mode"`
+	// Mode is optional: omitted means use the robot's configured clean mode.
+	Mode *ModeDTO `json:"mode,omitempty"`
 }
 
 type SelfCleanRequest struct {

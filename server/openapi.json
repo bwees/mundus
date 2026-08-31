@@ -73,7 +73,6 @@
 					}
 				},
 				"required": [
-					"mode",
 					"rooms"
 				],
 				"type": "object"
@@ -1332,9 +1331,150 @@
 				]
 			}
 		},
+		"/api/clean-mode": {
+			"get": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func4`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "getCleanMode",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ModeDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/ModeDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func4",
+				"tags": [
+					"api"
+				]
+			},
+			"put": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func5`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "setCleanMode",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/ModeDTO"
+							}
+						}
+					},
+					"description": "Request body for webapi.ModeDTO",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ModeDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/ModeDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func5",
+				"tags": [
+					"api"
+				]
+			}
+		},
 		"/api/config/mqtt": {
 			"get": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func12`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func14`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "getMqttConfig",
 				"parameters": [
 					{
@@ -1392,13 +1532,13 @@
 						"description": "Internal Server Error _(panics)_"
 					}
 				},
-				"summary": "func12",
+				"summary": "func14",
 				"tags": [
 					"api"
 				]
 			},
 			"put": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func13`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func15`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "setMqttConfig",
 				"parameters": [
 					{
@@ -1467,7 +1607,7 @@
 						"description": "Internal Server Error _(panics)_"
 					}
 				},
-				"summary": "func13",
+				"summary": "func15",
 				"tags": [
 					"api"
 				]
@@ -2405,7 +2545,7 @@
 		},
 		"/api/self-clean": {
 			"post": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func9`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func11`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "selfClean",
 				"parameters": [
 					{
@@ -2474,7 +2614,7 @@
 						"description": "Internal Server Error _(panics)_"
 					}
 				},
-				"summary": "func9",
+				"summary": "func11",
 				"tags": [
 					"api"
 				]
@@ -2482,7 +2622,7 @@
 		},
 		"/api/settings": {
 			"get": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func10`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func12`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "getSettings",
 				"parameters": [
 					{
@@ -2540,13 +2680,13 @@
 						"description": "Internal Server Error _(panics)_"
 					}
 				},
-				"summary": "func10",
+				"summary": "func12",
 				"tags": [
 					"api"
 				]
 			},
 			"put": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func11`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.NewServer.func13`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "setSettings",
 				"parameters": [
 					{
@@ -2615,7 +2755,7 @@
 						"description": "Internal Server Error _(panics)_"
 					}
 				},
-				"summary": "func11",
+				"summary": "func13",
 				"tags": [
 					"api"
 				]

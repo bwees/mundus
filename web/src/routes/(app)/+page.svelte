@@ -61,8 +61,37 @@
 		{ v: '1', l: '1 Pass' },
 		{ v: '2', l: '2 Passes' }
 	];
-	function mode() {
-		return { type: mType, fan_level: +mFan, water_level: +mWater, times: +mTimes };
+	// The clean mode lives on the robot, not in this page: Home Assistant and
+	// the web UI read and write the same value, so a change made in either shows
+	// up in the other rather than each keeping its own copy.
+	async function loadMode() {
+		try {
+			const m = await api.getCleanMode();
+			mType = m.type;
+			mFan = String(m.fan_level);
+			mWater = String(m.water_level);
+			mTimes = String(m.times);
+		} catch {
+			// left as-is; the next poll retries
+		}
+	}
+
+	async function saveMode() {
+		try {
+			const m = await api.setCleanMode({
+				type: mType,
+				fan_level: +mFan,
+				water_level: +mWater,
+				times: +mTimes
+			});
+			mType = m.type;
+			mFan = String(m.fan_level);
+			mWater = String(m.water_level);
+			mTimes = String(m.times);
+		} catch (e) {
+			toast.error(`Clean mode: ${e}`);
+			await loadMode();
+		}
 	}
 
 	async function refresh() {
@@ -71,6 +100,8 @@
 		} catch (e) {
 			robot = null;
 		}
+		// Picks up a mode changed from Home Assistant or the vendor app.
+		await loadMode();
 	}
 
 	async function act(label: string, fn: () => Promise<unknown>, ok: string) {
@@ -89,7 +120,7 @@
 	function cleanSelected() {
 		const ids = rooms.filter((r) => selected[r.id]).map((r) => r.id);
 		if (ids.length === 0) return;
-		return act('clean', () => api.startClean({ rooms: ids, mode: mode() }), 'Cleaning selected rooms');
+		return act('clean', () => api.startClean({ rooms: ids }), 'Cleaning selected rooms');
 	}
 
 	onMount(() => {
@@ -191,7 +222,7 @@
 				<Card.Title>Controls</Card.Title>
 			</Card.Header>
 			<Card.Content class="flex flex-wrap gap-2">
-				<Button disabled={!!busy} onclick={() => act('start', () => api.startClean({ rooms: [], mode: mode() }), 'Cleaning started')}>
+				<Button disabled={!!busy} onclick={() => act('start', () => api.startClean({ rooms: [] }), 'Cleaning started')}>
 					<Play class="size-4" /> Clean All
 				</Button>
 				<Button variant="secondary" disabled={!!busy} onclick={() => act('pause', () => api.pause(), 'Paused')}>
@@ -219,19 +250,19 @@
 			<Card.Content class="grid grid-cols-2 gap-4 sm:grid-cols-4">
 				<div class="space-y-1.5">
 					<Label>Type</Label>
-					{@render strSelect(mType, (v) => (mType = v), typeOpts)}
+					{@render strSelect(mType, (v) => { mType = v; saveMode(); }, typeOpts)}
 				</div>
 				<div class="space-y-1.5">
 					<Label>Fan</Label>
-					{@render strSelect(mFan, (v) => (mFan = v), fanOpts)}
+					{@render strSelect(mFan, (v) => { mFan = v; saveMode(); }, fanOpts)}
 				</div>
 				<div class="space-y-1.5">
 					<Label>Water</Label>
-					{@render strSelect(mWater, (v) => (mWater = v), waterOpts)}
+					{@render strSelect(mWater, (v) => { mWater = v; saveMode(); }, waterOpts)}
 				</div>
 				<div class="space-y-1.5">
 					<Label>Passes</Label>
-					{@render strSelect(mTimes, (v) => (mTimes = v), timesOpts)}
+					{@render strSelect(mTimes, (v) => { mTimes = v; saveMode(); }, timesOpts)}
 				</div>
 			</Card.Content>
 		</Card.Root>

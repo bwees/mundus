@@ -62,7 +62,7 @@ export type ModeDto = {
     water_level: number;
 };
 export type CleanRequest = {
-    mode: ModeDto;
+    mode?: ModeDto;
     rooms: string[] | null;
 };
 export type MqttConfigDto = {
@@ -375,7 +375,53 @@ export function startClean(cleanRequest: CleanRequest, { accept }: {
     })));
 }
 /**
- * func12
+ * func4
+ */
+export function getCleanMode({ accept }: {
+    accept?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ModeDto;
+    } | {
+        status: 400;
+        data: HttpError;
+    } | {
+        status: 500;
+        data: HttpError;
+    }>("/api/clean-mode", {
+        ...opts,
+        headers: oazapfts.mergeHeaders(opts?.headers, {
+            Accept: accept
+        })
+    }));
+}
+/**
+ * func5
+ */
+export function setCleanMode(modeDto: ModeDto, { accept }: {
+    accept?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ModeDto;
+    } | {
+        status: 400;
+        data: HttpError;
+    } | {
+        status: 500;
+        data: HttpError;
+    }>("/api/clean-mode", oazapfts.json({
+        ...opts,
+        method: "PUT",
+        body: modeDto,
+        headers: oazapfts.mergeHeaders(opts?.headers, {
+            Accept: accept
+        })
+    })));
+}
+/**
+ * func14
  */
 export function getMqttConfig({ accept }: {
     accept?: string;
@@ -397,7 +443,7 @@ export function getMqttConfig({ accept }: {
     }));
 }
 /**
- * func13
+ * func15
  */
 export function setMqttConfig(mqttConfigInput: MqttConfigInput, { accept }: {
     accept?: string;
@@ -723,7 +769,7 @@ export function getRooms({ accept }: {
     }));
 }
 /**
- * func9
+ * func11
  */
 export function selfClean(selfCleanRequest: SelfCleanRequest, { accept }: {
     accept?: string;
@@ -747,7 +793,7 @@ export function selfClean(selfCleanRequest: SelfCleanRequest, { accept }: {
     })));
 }
 /**
- * func10
+ * func12
  */
 export function getSettings({ accept }: {
     accept?: string;
@@ -769,7 +815,7 @@ export function getSettings({ accept }: {
     }));
 }
 /**
- * func11
+ * func13
  */
 export function setSettings(settingsInput: SettingsInput, { accept }: {
     accept?: string;

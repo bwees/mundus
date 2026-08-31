@@ -33,6 +33,9 @@ type Bridge struct {
 
 	state  *pending.Value[string]
 	drying *pending.Value[bool]
+	// modeWant keeps a just-issued clean-mode change visible until the robot
+	// reports it back, the same way state and drying do.
+	modeWant *pending.Value[robot.CleanMode]
 
 	mu   sync.Mutex
 	mode robot.CleanMode
@@ -52,6 +55,7 @@ func New(cfg config.Config, r *robot.Robot, api *robotapi.API, props settings.Pr
 		mode:     robot.DefaultCleanMode(),
 		state:    pending.New[string](pendWindow(cfg)),
 		drying:   pending.New[bool](pendWindow(cfg)),
+		modeWant: pending.New[robot.CleanMode](pendWindow(cfg)),
 		reconfig: make(chan config.MQTTSettings, 1),
 	}
 }
@@ -83,26 +87,49 @@ func (b *Bridge) apiMode() robotapi.CleanMode {
 	return robotapi.CleanMode{Type: m.Type, FanLevel: m.FanLevel, WaterLevel: m.WaterLevel, Times: m.Times}
 }
 
-func (b *Bridge) persistMode() {
-	if b.api == nil {
-		return
-	}
-	if err := b.api.SetCleanMode(b.apiMode()); err != nil {
-		b.log.Error("set clean mode failed", "err", err)
-	}
-}
-
-func (b *Bridge) getMode() robot.CleanMode {
+// CleanMode reports the mode last read from the robot, with a just-issued
+// change taking precedence until the robot confirms it.
+func (b *Bridge) CleanMode() robot.CleanMode {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	return b.mode
 }
 
-func (b *Bridge) updateMode(f func(*robot.CleanMode)) {
+// SetCleanMode is the single path every clean-mode change takes -- Home
+// Assistant selects, the fan-speed command and the web API all land here -- so
+// the robot is written, the cached value updated and MQTT notified exactly once
+// regardless of where the change came from.
+func (b *Bridge) SetCleanMode(m robot.CleanMode) error {
+	if b.api == nil {
+		return fmt.Errorf("robot control unavailable")
+	}
+	if err := b.api.SetCleanMode(robotapi.CleanMode(m)); err != nil {
+		return fmt.Errorf("set clean mode: %w", err)
+	}
 	b.mu.Lock()
-	defer b.mu.Unlock()
-	f(&b.mode)
+	b.mode = m
+	b.mu.Unlock()
+	b.modeWant.Expect(m)
+	b.publishState()
+	return nil
 }
+
+// refreshMode reconciles the cached mode with the robot's own record, so a
+// change made from the vendor app or a mundus restart does not leave Home
+// Assistant showing something the robot is not set to.
+func (b *Bridge) refreshMode() {
+	actual, err := b.robot.CleanMode()
+	if err != nil {
+		b.log.Warn("clean mode read failed", "err", err)
+		return
+	}
+	resolved := b.modeWant.Resolve(actual)
+	b.mu.Lock()
+	b.mode = resolved
+	b.mu.Unlock()
+}
+
+func (b *Bridge) getMode() robot.CleanMode { return b.CleanMode() }
 
 func (b *Bridge) selects() []selectEntity {
 	return []selectEntity{
@@ -115,8 +142,9 @@ func (b *Bridge) selects() []selectEntity {
 				if !ok {
 					return fmt.Errorf("unknown clean type %q", o)
 				}
-				b.updateMode(func(m *robot.CleanMode) { m.Type = wire })
-				return nil
+				m := b.CleanMode()
+				m.Type = wire
+				return b.SetCleanMode(m)
 			},
 		},
 		{
@@ -128,8 +156,9 @@ func (b *Bridge) selects() []selectEntity {
 				if !ok {
 					return fmt.Errorf("unknown water level %q", o)
 				}
-				b.updateMode(func(m *robot.CleanMode) { m.WaterLevel = v })
-				return nil
+				m := b.CleanMode()
+				m.WaterLevel = v
+				return b.SetCleanMode(m)
 			},
 		},
 		{
@@ -141,8 +170,9 @@ func (b *Bridge) selects() []selectEntity {
 				if !ok {
 					return fmt.Errorf("unknown passes %q", o)
 				}
-				b.updateMode(func(m *robot.CleanMode) { m.Times = v })
-				return nil
+				m := b.CleanMode()
+				m.Times = v
+				return b.SetCleanMode(m)
 			},
 		},
 	}
@@ -185,6 +215,7 @@ func (b *Bridge) Run(stop <-chan struct{}) error {
 
 	ticker := time.NewTicker(b.cfg.PollInterval)
 	defer ticker.Stop()
+	b.refreshMode()
 	b.publishState()
 
 	for {
@@ -196,6 +227,7 @@ func (b *Bridge) Run(stop <-chan struct{}) error {
 			}
 			return nil
 		case <-ticker.C:
+			b.refreshMode()
 			b.publishState()
 		case s := <-b.reconfig:
 			b.applyMQTT(s)
@@ -255,6 +287,7 @@ func (b *Bridge) onConnect(_ mqtt.Client) {
 	b.publishDiscovery()
 	b.publish(b.t.availability, "online", true)
 	b.subscribe()
+	b.refreshMode()
 	b.publishState()
 }
 
@@ -281,10 +314,7 @@ func (b *Bridge) subscribe() {
 			opt := string(m.Payload())
 			if err := apply(opt); err != nil {
 				b.log.Error("select failed", "select", name, "option", opt, "err", err)
-				return
 			}
-			b.persistMode()
-			b.publishState()
 		})
 	}
 	if b.dryingConfigured() {
@@ -352,9 +382,11 @@ func (b *Bridge) handleFanSpeed(_ mqtt.Client, m mqtt.Message) {
 		b.log.Error("unknown fan speed", "speed", speed)
 		return
 	}
-	b.updateMode(func(cm *robot.CleanMode) { cm.FanLevel = level })
-	b.persistMode()
-	b.publishState()
+	cm := b.CleanMode()
+	cm.FanLevel = level
+	if err := b.SetCleanMode(cm); err != nil {
+		b.log.Error("set fan speed failed", "speed", speed, "err", err)
+	}
 }
 
 func (b *Bridge) handleMopDrying(_ mqtt.Client, m mqtt.Message) {

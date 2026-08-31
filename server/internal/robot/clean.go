@@ -1,5 +1,7 @@
 package robot
 
+import "fmt"
+
 type CleanMode struct {
 	Type       string `json:"type"`        // sweep|mop|sweep_mop|first_sweep_then_mop
 	FanLevel   int    `json:"fan_level"`   // 1-4
@@ -9,6 +11,24 @@ type CleanMode struct {
 
 func DefaultCleanMode() CleanMode {
 	return CleanMode{Type: "sweep_mop", FanLevel: 2, WaterLevel: 1, Times: 1}
+}
+
+// Validate rejects a mode the firmware would not accept, so a bad value is
+// refused at the edge rather than persisted as the robot's clean mode.
+func (m CleanMode) Validate() error {
+	if _, ok := cleanTypeLabel[m.Type]; !ok {
+		return fmt.Errorf("unknown clean type %q", m.Type)
+	}
+	if m.FanLevel < 1 || m.FanLevel > 4 {
+		return fmt.Errorf("fan level %d is outside 1-4", m.FanLevel)
+	}
+	if m.WaterLevel < 1 || m.WaterLevel > 3 {
+		return fmt.Errorf("water level %d is outside 1-3", m.WaterLevel)
+	}
+	if m.Times < 1 || m.Times > 2 {
+		return fmt.Errorf("passes %d is outside 1-2", m.Times)
+	}
+	return nil
 }
 
 // Clean-mode selects: option labels shown in HA <-> the wire values the robot

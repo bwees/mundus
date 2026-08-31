@@ -29,6 +29,10 @@ type MQTTController interface {
 	MQTTConnected() bool
 	Reconfigure(config.MQTTSettings)
 	RoomsChanged()
+	// The clean mode lives on the bridge so that the web UI and Home Assistant
+	// read and write the same value, and every change is announced on MQTT.
+	CleanMode() robot.CleanMode
+	SetCleanMode(robot.CleanMode) error
 }
 
 type Deps struct {
@@ -115,9 +119,11 @@ func NewServer(d Deps) *fuego.Server {
 		if err != nil {
 			return OK{}, err
 		}
-		mode := toMode(body.Mode)
-		if mode.Type == "" {
-			mode = robotapi.DefaultCleanMode()
+		// An omitted mode means "use the configured one", which is what the web
+		// UI sends now that the mode is shared rather than held per-client.
+		mode := robotapi.CleanMode(d.MQTT.CleanMode())
+		if body.Mode != nil {
+			mode = toMode(*body.Mode)
 		}
 		if len(body.Rooms) > 0 {
 			err = d.API.CleanRooms(body.Rooms, mode)
@@ -126,6 +132,27 @@ func NewServer(d Deps) *fuego.Server {
 		}
 		return OK{OK: err == nil}, err
 	}, fuego.OptionOperationID("startClean"))
+
+	fuego.Get(api, "/clean-mode", func(ctx fuego.ContextNoBody) (ModeDTO, error) {
+		m := d.MQTT.CleanMode()
+		return ModeDTO{Type: m.Type, FanLevel: m.FanLevel, WaterLevel: m.WaterLevel, Times: m.Times}, nil
+	}, fuego.OptionOperationID("getCleanMode"))
+
+	fuego.Put(api, "/clean-mode", func(ctx fuego.ContextWithBody[ModeDTO]) (ModeDTO, error) {
+		body, err := ctx.Body()
+		if err != nil {
+			return ModeDTO{}, err
+		}
+		next := robot.CleanMode{Type: body.Type, FanLevel: body.FanLevel, WaterLevel: body.WaterLevel, Times: body.Times}
+		if err := next.Validate(); err != nil {
+			return ModeDTO{}, fuego.BadRequestError{Title: err.Error()}
+		}
+		if err := d.MQTT.SetCleanMode(next); err != nil {
+			return ModeDTO{}, err
+		}
+		m := d.MQTT.CleanMode()
+		return ModeDTO{Type: m.Type, FanLevel: m.FanLevel, WaterLevel: m.WaterLevel, Times: m.Times}, nil
+	}, fuego.OptionOperationID("setCleanMode"))
 
 	fuego.Post(api, "/dock", cmd(func() error { return d.API.Dock() }), fuego.OptionOperationID("dock"))
 	fuego.Post(api, "/pause", cmd(func() error { return d.API.Pause() }), fuego.OptionOperationID("pause"))

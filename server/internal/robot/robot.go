@@ -31,6 +31,25 @@ func (r *Robot) Raw(cmd string) (string, error) {
 	return r.c.Exec(cmd)
 }
 
+// CleanMode reads the clean mode the robot has persisted. This is the only
+// source of truth for it: the vendor app, funcID 1043 and mundus all write the
+// same record, so anything held in memory goes stale the moment one of the
+// others changes it.
+func (r *Robot) CleanMode() (CleanMode, error) {
+	var m CleanMode
+	if r.cmd.ProbeCleanMode == "" {
+		return m, fmt.Errorf("clean-mode probe not configured")
+	}
+	out, err := r.c.Exec(r.cmd.ProbeCleanMode)
+	if err != nil {
+		return m, err
+	}
+	if !decodeJSON(out, &m) || m.Type == "" {
+		return m, fmt.Errorf("parse clean mode: %q", out)
+	}
+	return m, nil
+}
+
 // Poll reads current telemetry over the terminal. Every probe is best-effort;
 // missing fields leave zero/unknown values rather than failing the whole poll.
 // Battery, fan level and the human-readable run state come from the brain-status

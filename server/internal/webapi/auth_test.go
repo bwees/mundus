@@ -24,10 +24,12 @@ import (
 
 type stubMQTT struct{}
 
-func (stubMQTT) CurrentMQTT() config.MQTTSettings { return config.MQTTSettings{} }
-func (stubMQTT) MQTTConnected() bool              { return false }
-func (stubMQTT) Reconfigure(config.MQTTSettings)  {}
-func (stubMQTT) RoomsChanged()                    {}
+func (stubMQTT) CurrentMQTT() config.MQTTSettings   { return config.MQTTSettings{} }
+func (stubMQTT) MQTTConnected() bool                { return false }
+func (stubMQTT) Reconfigure(config.MQTTSettings)    {}
+func (stubMQTT) RoomsChanged()                      {}
+func (stubMQTT) CleanMode() robot.CleanMode         { return robot.DefaultCleanMode() }
+func (stubMQTT) SetCleanMode(robot.CleanMode) error { return nil }
 
 // stubProps stands in for the local-cloud settings backend, which is the only
 // thing that can deliver a property change to the robot. It records writes so

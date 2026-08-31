@@ -20,6 +20,9 @@ type Commands struct {
 	// iot carries srv.state (WorkingStatus) and cloud_conn.is_connected.
 	ProbeBrainStatus string // [C]
 	ProbeIot         string // [C]
+	// ProbeCleanMode returns the persisted clean mode, which is what the app
+	// and funcID 1043 both write. [C]
+	ProbeCleanMode string
 }
 
 func DefaultCommands() Commands {
@@ -34,5 +37,6 @@ func DefaultCommands() Commands {
 
 		ProbeBrainStatus: "/cc/brain/status/print",
 		ProbeIot:         "/cc/iot/print",
+		ProbeCleanMode:   "/cc/db/print_clean_mode",
 	}
 }
