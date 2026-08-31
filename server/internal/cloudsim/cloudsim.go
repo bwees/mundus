@@ -45,8 +45,11 @@ type Server struct {
 	ca  tls.Certificate
 	pub *x509.Certificate
 
-	mu     sync.Mutex
-	minted map[string]*tls.Certificate
+	mu      sync.Mutex
+	minted  map[string]*tls.Certificate
+	session *session
+	seq     int
+	props   *properties
 
 	listeners []interface{ Close() error }
 }
@@ -62,6 +65,11 @@ func New(cfg Config) (*Server, error) {
 	if err := s.loadOrCreateCA(); err != nil {
 		return nil, err
 	}
+	props, err := loadProperties(cfg.CertDir)
+	if err != nil {
+		return nil, err
+	}
+	s.props = props
 	return s, nil
 }
 

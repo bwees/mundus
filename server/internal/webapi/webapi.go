@@ -35,7 +35,7 @@ type Deps struct {
 	Auth        *auth.Store
 	Security    fuego.Security
 	API         *robotapi.API
-	Props       *robotapi.Properties
+	Props       settings.Props
 	Robot       *robot.Robot
 	Rooms       func() []robot.Room
 	MQTT        MQTTController
@@ -146,6 +146,10 @@ func NewServer(d Deps) *fuego.Server {
 		all := settings.All()
 		values := make(map[string]int, len(all))
 		for _, s := range all {
+			if d.Props == nil {
+				values[s.Key] = s.Default
+				continue
+			}
 			values[s.Key] = s.Read(d.Props)
 		}
 		return SettingsDTO{Schema: all, Values: values}, nil
@@ -155,6 +159,9 @@ func NewServer(d Deps) *fuego.Server {
 		body, err := ctx.Body()
 		if err != nil {
 			return OK{}, err
+		}
+		if d.Props == nil {
+			return OK{}, fuego.HTTPError{Detail: "settings are delivered over the local cloud link, which is not running", Status: http.StatusServiceUnavailable}
 		}
 		known := map[string]settings.Setting{}
 		for _, s := range settings.All() {

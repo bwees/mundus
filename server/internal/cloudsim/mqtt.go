@@ -37,6 +37,7 @@ func (s *Server) acceptMQTT(ln net.Listener) {
 // is the whole point, since nothing may leave the device.
 func (s *Server) handleMQTT(c net.Conn) {
 	defer c.Close()
+	defer s.clearSession(c)
 	for {
 		pkt, err := readPacket(c)
 		if err != nil {
@@ -56,12 +57,13 @@ func (s *Server) handleMQTT(c net.Conn) {
 				c.Write([]byte{pktPuback << 4, 0x02, byte(id >> 8), byte(id)})
 			}
 		case pktSubscribe:
-			id, n := pkt.subscribeMeta()
-			ack := []byte{pktSuback << 4, byte(2 + n), byte(id >> 8), byte(id)}
-			for i := 0; i < n; i++ {
+			id, topics := pkt.subscribeMeta()
+			ack := []byte{pktSuback << 4, byte(2 + len(topics)), byte(id >> 8), byte(id)}
+			for range topics {
 				ack = append(ack, 0x00) // granted QoS 0
 			}
 			c.Write(ack)
+			s.adoptSession(c, topics)
 		case pktUnsubscribe:
 			id, _ := pkt.subscribeMeta()
 			c.Write([]byte{pktUnsuback << 4, 0x02, byte(id >> 8), byte(id)})
@@ -128,11 +130,12 @@ func (p mqttPacket) publishMeta() (topic string, id int, qos byte) {
 	return topic, id, qos
 }
 
-// subscribeMeta returns the packet id and how many topic filters it carries,
-// which is all that is needed to build a correctly sized SUBACK.
-func (p mqttPacket) subscribeMeta() (id, count int) {
+// subscribeMeta returns the packet id and the topic filters. The filters name
+// the device and model (v1_1/<model>/<deviceID>/<channel>), which is how the
+// publish topic is learned rather than hardcoded.
+func (p mqttPacket) subscribeMeta() (id int, topics []string) {
 	if len(p.body) < 2 {
-		return 0, 0
+		return 0, nil
 	}
 	id = int(p.body[0])<<8 | int(p.body[1])
 	rest := p.body[2:]
@@ -146,8 +149,31 @@ func (p mqttPacket) subscribeMeta() (id, count int) {
 		if len(rest) < step {
 			break
 		}
-		count++
+		topics = append(topics, string(rest[2:2+tl]))
 		rest = rest[step:]
 	}
-	return id, count
+	return id, topics
+}
+
+// encodePublish builds a QoS 0 PUBLISH frame.
+func encodePublish(topic string, payload []byte) []byte {
+	var body []byte
+	body = append(body, byte(len(topic)>>8), byte(len(topic)))
+	body = append(body, topic...)
+	body = append(body, payload...)
+
+	frame := []byte{pktPublish << 4}
+	n := len(body)
+	for {
+		b := byte(n % 128)
+		n /= 128
+		if n > 0 {
+			b |= 0x80
+		}
+		frame = append(frame, b)
+		if n == 0 {
+			break
+		}
+	}
+	return append(frame, body...)
 }

@@ -14,13 +14,14 @@ import (
 	"github.com/bwees/mundus/server/internal/pending"
 	"github.com/bwees/mundus/server/internal/robot"
 	"github.com/bwees/mundus/server/internal/robotapi"
+	"github.com/bwees/mundus/server/internal/settings"
 )
 
 type Bridge struct {
 	cfg   config.Config
 	robot *robot.Robot
 	api   *robotapi.API
-	props *robotapi.Properties
+	props settings.Props
 	log   *slog.Logger
 
 	t         topics
@@ -39,7 +40,7 @@ type Bridge struct {
 	bursting atomic.Bool
 }
 
-func New(cfg config.Config, r *robot.Robot, api *robotapi.API, props *robotapi.Properties, rooms func() []robot.Room, log *slog.Logger) *Bridge {
+func New(cfg config.Config, r *robot.Robot, api *robotapi.API, props settings.Props, rooms func() []robot.Room, log *slog.Logger) *Bridge {
 	return &Bridge{
 		cfg:      cfg,
 		robot:    r,

@@ -55,12 +55,12 @@ func TestSubscribeMetaCountsFilters(t *testing.T) {
 		body = append(body, 0x00) // requested QoS
 	}
 	p := mqttPacket{typ: pktSubscribe, body: body}
-	id, count := p.subscribeMeta()
+	id, topics := p.subscribeMeta()
 	if id != 7 {
 		t.Errorf("id = %d, want 7", id)
 	}
-	if count != 2 {
-		t.Errorf("count = %d, want 2", count)
+	if len(topics) != 2 || topics[0] != "a/b" || topics[1] != "c/d/e" {
+		t.Errorf("topics = %q, want [a/b c/d/e]", topics)
 	}
 }
 
@@ -72,11 +72,11 @@ func TestSubscribeMetaUnsubscribeStride(t *testing.T) {
 		body = append(body, f...)
 	}
 	p := mqttPacket{typ: pktUnsubscribe, body: body}
-	id, count := p.subscribeMeta()
+	id, topics := p.subscribeMeta()
 	if id != 9 {
 		t.Errorf("id = %d, want 9", id)
 	}
-	if count != 2 {
-		t.Errorf("count = %d, want 2", count)
+	if len(topics) != 2 || topics[0] != "a/b" || topics[1] != "c/d/e" {
+		t.Errorf("topics = %q, want [a/b c/d/e]", topics)
 	}
 }

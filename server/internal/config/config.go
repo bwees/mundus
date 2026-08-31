@@ -23,7 +23,6 @@ type Config struct {
 
 	DiscoveryPrefix string        `json:"discovery_prefix"`
 	BaseTopic       string        `json:"base_topic"`
-	PropertyCache   string        `json:"property_cache"`
 	MapDir          string        `json:"map_dir"`
 	TrackPath       string        `json:"track_path"`
 	WebAddr         string        `json:"web_addr"`
@@ -49,7 +48,6 @@ func Default() Config {
 		MQTTClientID:       "mundus",
 		DiscoveryPrefix:    "homeassistant",
 		BaseTopic:          "mundus",
-		PropertyCache:      "/data/control_center/db/property_table_cache.json",
 		MapDir:             "/data/map_server/map",
 		TrackPath:          "/data/control_center/current_map/track.json",
 		WebAddr:            ":8080",

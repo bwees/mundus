@@ -29,6 +29,38 @@ func (stubMQTT) MQTTConnected() bool              { return false }
 func (stubMQTT) Reconfigure(config.MQTTSettings)  {}
 func (stubMQTT) RoomsChanged()                    {}
 
+// stubProps stands in for the local-cloud settings backend, which is the only
+// thing that can deliver a property change to the robot. It records writes so
+// tests can round-trip a setting.
+type stubProps struct{ values map[int]any }
+
+func newStubProps() stubProps { return stubProps{values: map[int]any{}} }
+
+func (p stubProps) GetInt(id, def int) int {
+	if v, ok := p.values[id].(int); ok {
+		return v
+	}
+	if v, ok := p.values[id].(bool); ok {
+		if v {
+			return 1
+		}
+		return 0
+	}
+	return def
+}
+
+func (p stubProps) GetBool(id int, def bool) bool {
+	if v, ok := p.values[id].(bool); ok {
+		return v
+	}
+	if v, ok := p.values[id].(int); ok {
+		return v != 0
+	}
+	return def
+}
+
+func (p stubProps) Set(id int, v any) error { p.values[id] = v; return nil }
+
 func testServer(t *testing.T) (*fuego.Server, Deps) {
 	t.Helper()
 	store, err := auth.Load(filepath.Join(t.TempDir(), "auth.json"))
@@ -39,7 +71,7 @@ func testServer(t *testing.T) (*fuego.Server, Deps) {
 		Auth:     store,
 		Security: fuego.NewSecurity(),
 		API:      &robotapi.API{},
-		Props:    robotapi.NewProperties(filepath.Join(t.TempDir(), "props.json")),
+		Props:    newStubProps(),
 		Robot:    &robot.Robot{},
 		Rooms:    func() []robot.Room { return nil },
 		MQTT:     stubMQTT{},

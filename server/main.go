@@ -18,6 +18,7 @@ import (
 	"github.com/bwees/mundus/server/internal/hass"
 	"github.com/bwees/mundus/server/internal/robot"
 	"github.com/bwees/mundus/server/internal/robotapi"
+	"github.com/bwees/mundus/server/internal/settings"
 	"github.com/bwees/mundus/server/internal/system"
 	"github.com/bwees/mundus/server/internal/update"
 	"github.com/bwees/mundus/server/internal/webapi"
@@ -123,9 +124,7 @@ func main() {
 		log.Error("funcapi unavailable; commands will be rejected until it recovers")
 	}
 
-	props := robotapi.NewProperties(cfg.PropertyCache)
 	rooms := roomsFromMap(cfg.MapDir, r)
-	bridge := hass.New(cfg, r, api, props, rooms, log)
 
 	authStore, err := auth.Load(cfg.AuthPath)
 	if err != nil {
@@ -141,7 +140,9 @@ func main() {
 	// The local cloud replacement runs whenever mundus does. It only takes
 	// effect once the cloud is disabled and the resolver points at it, so
 	// starting it unconditionally costs nothing and keeps the toggle instant.
-	// Failure is not fatal: it only means the cloud cannot be turned off.
+	// Failure is not fatal: it means the cloud cannot be turned off, and device
+	// settings -- which are delivered over this link -- cannot be changed.
+	var props settings.Props
 	if sim, err := cloudsim.New(cloudsim.Config{
 		MQTTAddr: ":8883",
 		CertDir:  cfg.CloudSimDir,
@@ -153,8 +154,10 @@ func main() {
 	} else {
 		defer sim.Close()
 		sys.SetCloudSim(sim.CACertPath(), sim.ClientCertPath(), sim.ClientKeyPath())
+		props = sim.Settings()
 	}
 
+	bridge := hass.New(cfg, r, api, props, rooms, log)
 	updater := update.New(updateRepo, version, cfg.BinPath, cfg.WebStatic, log)
 
 	if *rollback {
