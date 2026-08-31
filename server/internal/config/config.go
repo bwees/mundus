@@ -32,6 +32,7 @@ type Config struct {
 	AuthPath        string        `json:"auth_path"`
 	BinPath         string        `json:"bin_path"`
 	LogDir          string        `json:"log_dir"`
+	CloudSimDir     string        `json:"cloud_sim_dir"`
 	PollInterval    time.Duration `json:"-"`
 
 	RobotDialTimeoutMS int `json:"robot_dial_timeout_ms"`
@@ -57,6 +58,7 @@ func Default() Config {
 		AuthPath:           "/opt/wlab/sweepbot/mundus/auth.json",
 		BinPath:            "/opt/wlab/sweepbot/mundus/mundus",
 		LogDir:             "/opt/wlab/sweepbot/mundus/logs",
+		CloudSimDir:        "/opt/wlab/sweepbot/mundus/cloudsim",
 		RobotDialTimeoutMS: 5000,
 		RobotReadIdleMS:    400,
 		PollIntervalMS:     10000,

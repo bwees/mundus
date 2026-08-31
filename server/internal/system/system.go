@@ -16,6 +16,9 @@ type System struct {
 
 	// keyMu serializes the read-modify-write cycles on authorized_keys.
 	keyMu sync.Mutex
+
+	// Credentials for the local cloud replacement, set via SetCloudSim.
+	simCA, simCert, simKey string
 }
 
 func New(r *robot.Robot) *System {

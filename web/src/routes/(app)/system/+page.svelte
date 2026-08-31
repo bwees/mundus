@@ -78,10 +78,27 @@
 	async function loadCloud() { try { cloud = await api.getCloud(); } catch (e) { toast.error(`Cloud: ${e}`); } }
 	async function toggleCloud(enabled: boolean) {
 		busy = 'cloud';
-		try { await api.setCloud({ enabled }); toast.success(enabled ? 'Cloud enabled' : 'Cloud disabled (effective on reconnect/reboot)'); await loadCloud(); }
+		try { await api.setCloud({ enabled }); toast.success(enabled ? 'Cloud enabled' : 'Cloud disabled; the robot now uses its local endpoint'); await loadCloud(); }
 		catch (e) { toast.error(`Cloud: ${e}`); }
 		finally { busy = ''; }
 	}
+
+	// With the cloud off the robot still holds an MQTT session, but to mundus's
+	// own local endpoint rather than to SwitchBot -- so "connected" on its own
+	// would read as though the cloud were still in use. Losing that local
+	// session is worth calling out, because the firmware will not clean without
+	// one.
+	const cloudBadge = $derived.by(() => {
+		if (!cloud) return null;
+		if (cloud.enabled) {
+			return cloud.connected
+				? { text: 'Connected to SwitchBot', variant: 'default' as const }
+				: { text: 'Not connected', variant: 'secondary' as const };
+		}
+		return cloud.connected
+			? { text: 'Offline — served locally', variant: 'secondary' as const }
+			: { text: 'Offline — local endpoint down', variant: 'destructive' as const };
+	});
 
 	async function loadSsh() { try { ssh = await api.getSsh(); } catch (e) { toast.error(`SSH: ${e}`); } }
 	async function toggleSsh(enabled: boolean) {
@@ -166,7 +183,7 @@
 						<Switch checked={cloud.enabled} disabled={busy === 'cloud'} onCheckedChange={toggleCloud} />
 					</div>
 					<div class="flex gap-2 text-xs">
-						<Badge variant={cloud.connected ? 'default' : 'secondary'}>{cloud.connected ? 'Connected' : 'Not connected'}</Badge>
+						{#if cloudBadge}<Badge variant={cloudBadge.variant}>{cloudBadge.text}</Badge>{/if}
 						<Badge variant="outline">{cloud.bound ? 'Account-bound' : 'Unbound'}</Badge>
 					</div>
 				{/if}

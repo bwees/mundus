@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/bwees/mundus/server/internal/auth"
+	"github.com/bwees/mundus/server/internal/cloudsim"
 	"github.com/bwees/mundus/server/internal/config"
 	"github.com/bwees/mundus/server/internal/funcapi"
 	"github.com/bwees/mundus/server/internal/hass"
@@ -136,6 +137,24 @@ func main() {
 	}
 
 	sys := system.New(r)
+
+	// The local cloud replacement runs whenever mundus does. It only takes
+	// effect once the cloud is disabled and the resolver points at it, so
+	// starting it unconditionally costs nothing and keeps the toggle instant.
+	// Failure is not fatal: it only means the cloud cannot be turned off.
+	if sim, err := cloudsim.New(cloudsim.Config{
+		MQTTAddr: ":8883",
+		CertDir:  cfg.CloudSimDir,
+		Log:      log,
+	}); err != nil {
+		log.Error("cloudsim init", "err", err)
+	} else if err := sim.Start(); err != nil {
+		log.Error("cloudsim start", "err", err)
+	} else {
+		defer sim.Close()
+		sys.SetCloudSim(sim.CACertPath(), sim.ClientCertPath(), sim.ClientKeyPath())
+	}
+
 	updater := update.New(updateRepo, version, cfg.BinPath, cfg.WebStatic, log)
 
 	if *rollback {
