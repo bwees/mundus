@@ -25,6 +25,7 @@ type Config struct {
 	BaseTopic       string        `json:"base_topic"`
 	PropertyCache   string        `json:"property_cache"`
 	MapDir          string        `json:"map_dir"`
+	TrackPath       string        `json:"track_path"`
 	WebAddr         string        `json:"web_addr"`
 	WebStatic       string        `json:"web_static"`
 	RuntimePath     string        `json:"runtime_path"`
@@ -49,6 +50,7 @@ func Default() Config {
 		BaseTopic:          "mundus",
 		PropertyCache:      "/data/control_center/db/property_table_cache.json",
 		MapDir:             "/data/map_server/map",
+		TrackPath:          "/data/control_center/current_map/track.json",
 		WebAddr:            ":8080",
 		WebStatic:          "/opt/wlab/sweepbot/mundus/web",
 		RuntimePath:        "/opt/wlab/sweepbot/mundus/runtime.json",

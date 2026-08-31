@@ -3,7 +3,7 @@ package robot
 // Every value is a cpp-tbox terminal command line sent verbatim to
 // control_center on 127.0.0.1:50000. Node names and telemetry shapes were
 // verified on a live S20 (W1106000) by walking `tree` and reading the `print`
-// dumps; see ../switchbot-research/docs/control-protocol.md. Tags mark how far
+// dumps; Tags mark how far
 // that went: [C] confirmed on device (for probes, output shape observed);
 // [A] node exists but args and safety behaviour are unverified.
 

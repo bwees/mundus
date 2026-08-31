@@ -19,6 +19,7 @@
 	import X from '@lucide/svelte/icons/x';
 
 	let map = $state<MapDto | null>(null);
+	let track = $state<number[]>([]);
 	let selected = $state<Record<string, boolean>>({});
 	let busy = $state(false);
 	let svgEl = $state<SVGSVGElement | null>(null);
@@ -83,6 +84,10 @@
 
 	async function load() {
 		try { map = await api.getMap(); } catch (e) { toast.error(api.apiErrorMessage(e, 'Failed to load map')); }
+	}
+
+	async function loadTrack() {
+		try { track = (await api.getMapTrack()).points ?? []; } catch {}
 	}
 
 	function pick(id: string, e: MouseEvent) {
@@ -234,7 +239,12 @@
 		};
 	});
 
-	onMount(load);
+	onMount(() => {
+		load();
+		loadTrack();
+		const t = setInterval(loadTrack, 3000);
+		return () => clearInterval(t);
+	});
 </script>
 
 <svelte:window onkeydown={onKeydown} />
@@ -334,6 +344,18 @@
 						/>
 					{/if}
 				{/each}
+
+				{#if track.length >= 4}
+					<polyline
+						points={points(track)}
+						fill="none"
+						class="pointer-events-none stroke-foreground"
+						stroke-width="0.4"
+						stroke-opacity="0.7"
+						stroke-linejoin="round"
+						stroke-linecap="round"
+					/>
+				{/if}
 
 				{#each rooms as r (r.id + '-l')}
 					{@const c = centroid(r.geometry)}

@@ -17,6 +17,14 @@ func registerMap(api *fuego.Server, d Deps) {
 		return buildMap(d)
 	}, fuego.OptionOperationID("getMap"))
 
+	fuego.Get(api, "/map/track", func(ctx fuego.ContextNoBody) (TrackDTO, error) {
+		pts, err := robotapi.ReadTrack(d.TrackPath)
+		if err != nil {
+			return TrackDTO{}, err
+		}
+		return TrackDTO{Points: pts}, nil
+	}, fuego.OptionOperationID("getMapTrack"))
+
 	fuego.Put(api, "/map/room", func(ctx fuego.ContextWithBody[RenameRoomInput]) (OK, error) {
 		body, err := ctx.Body()
 		if err != nil {

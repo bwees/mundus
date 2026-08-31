@@ -42,6 +42,7 @@ type Deps struct {
 	System      *system.System
 	Update      *update.Updater
 	MapDir      string
+	TrackPath   string
 	RuntimePath string
 	DeviceName  string
 	Addr        string

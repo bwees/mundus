@@ -157,6 +157,7 @@ func main() {
 			System:      sys,
 			Update:      updater,
 			MapDir:      cfg.MapDir,
+			TrackPath:   cfg.TrackPath,
 			RuntimePath: cfg.RuntimePath,
 			DeviceName:  cfg.DeviceName,
 			Addr:        cfg.WebAddr,

@@ -117,6 +117,9 @@ export type SplitRoomInput = {
     line: any;
     new_name: string;
 };
+export type TrackDto = {
+    points: number[] | null;
+};
 export type AddZoneInput = {
     geometry: number[] | null;
     kind: string;
@@ -486,7 +489,7 @@ export function getMap({ accept }: {
     }));
 }
 /**
- * func3
+ * func4
  */
 export function mergeRooms(mergeRoomsInput: MergeRoomsInput, { accept }: {
     accept?: string;
@@ -510,7 +513,7 @@ export function mergeRooms(mergeRoomsInput: MergeRoomsInput, { accept }: {
     })));
 }
 /**
- * func2
+ * func3
  */
 export function renameRoom(renameRoomInput: RenameRoomInput, { accept }: {
     accept?: string;
@@ -534,7 +537,7 @@ export function renameRoom(renameRoomInput: RenameRoomInput, { accept }: {
     })));
 }
 /**
- * func4
+ * func5
  */
 export function splitRoom(splitRoomInput: SplitRoomInput, { accept }: {
     accept?: string;
@@ -558,7 +561,29 @@ export function splitRoom(splitRoomInput: SplitRoomInput, { accept }: {
     })));
 }
 /**
- * func5
+ * func2
+ */
+export function getMapTrack({ accept }: {
+    accept?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: TrackDto;
+    } | {
+        status: 400;
+        data: HttpError;
+    } | {
+        status: 500;
+        data: HttpError;
+    }>("/api/map/track", {
+        ...opts,
+        headers: oazapfts.mergeHeaders(opts?.headers, {
+            Accept: accept
+        })
+    }));
+}
+/**
+ * func6
  */
 export function addZone(addZoneInput: AddZoneInput, { accept }: {
     accept?: string;
@@ -582,7 +607,7 @@ export function addZone(addZoneInput: AddZoneInput, { accept }: {
     })));
 }
 /**
- * func7
+ * func8
  */
 export function deleteZone(zoneIdInput: ZoneIdInput, { accept }: {
     accept?: string;
@@ -606,7 +631,7 @@ export function deleteZone(zoneIdInput: ZoneIdInput, { accept }: {
     })));
 }
 /**
- * func6
+ * func7
  */
 export function updateZone(updateZoneInput: UpdateZoneInput, { accept }: {
     accept?: string;

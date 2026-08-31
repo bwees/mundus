@@ -726,6 +726,25 @@
 				],
 				"type": "object"
 			},
+			"TrackDTO": {
+				"description": "TrackDTO schema",
+				"properties": {
+					"points": {
+						"items": {
+							"format": "double",
+							"type": "number"
+						},
+						"type": [
+							"array",
+							"null"
+						]
+					}
+				},
+				"required": [
+					"points"
+				],
+				"type": "object"
+			},
 			"UpdateZoneInput": {
 				"description": "UpdateZoneInput schema",
 				"properties": {
@@ -1654,7 +1673,7 @@
 		},
 		"/api/map/merge": {
 			"post": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func3`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func4`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "mergeRooms",
 				"parameters": [
 					{
@@ -1723,7 +1742,7 @@
 						"description": "Internal Server Error _(panics)_"
 					}
 				},
-				"summary": "func3",
+				"summary": "func4",
 				"tags": [
 					"api"
 				]
@@ -1731,7 +1750,7 @@
 		},
 		"/api/map/room": {
 			"put": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func2`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func3`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "renameRoom",
 				"parameters": [
 					{
@@ -1800,7 +1819,7 @@
 						"description": "Internal Server Error _(panics)_"
 					}
 				},
-				"summary": "func2",
+				"summary": "func3",
 				"tags": [
 					"api"
 				]
@@ -1808,7 +1827,7 @@
 		},
 		"/api/map/split": {
 			"post": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func4`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func5`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "splitRoom",
 				"parameters": [
 					{
@@ -1877,7 +1896,73 @@
 						"description": "Internal Server Error _(panics)_"
 					}
 				},
-				"summary": "func4",
+				"summary": "func5",
+				"tags": [
+					"api"
+				]
+			}
+		},
+		"/api/map/track": {
+			"get": {
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func2`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "getMapTrack",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TrackDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/TrackDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					}
+				},
+				"summary": "func2",
 				"tags": [
 					"api"
 				]
@@ -1885,7 +1970,7 @@
 		},
 		"/api/map/zone": {
 			"post": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func5`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func6`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "addZone",
 				"parameters": [
 					{
@@ -1954,7 +2039,7 @@
 						"description": "Internal Server Error _(panics)_"
 					}
 				},
-				"summary": "func5",
+				"summary": "func6",
 				"tags": [
 					"api"
 				]
@@ -1962,7 +2047,7 @@
 		},
 		"/api/map/zone/delete": {
 			"post": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func7`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func8`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "deleteZone",
 				"parameters": [
 					{
@@ -2031,7 +2116,7 @@
 						"description": "Internal Server Error _(panics)_"
 					}
 				},
-				"summary": "func7",
+				"summary": "func8",
 				"tags": [
 					"api"
 				]
@@ -2039,7 +2124,7 @@
 		},
 		"/api/map/zone/update": {
 			"post": {
-				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func6`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`github.com/bwees/mundus/server/internal/webapi.registerMap.func7`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "updateZone",
 				"parameters": [
 					{
@@ -2108,7 +2193,7 @@
 						"description": "Internal Server Error _(panics)_"
 					}
 				},
-				"summary": "func6",
+				"summary": "func7",
 				"tags": [
 					"api"
 				]

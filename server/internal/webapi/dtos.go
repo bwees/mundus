@@ -85,6 +85,13 @@ type MapDTO struct {
 	Zones      []ZoneDTO     `json:"zones"`
 }
 
+// TrackDTO is the robot's pose trail for the current task: a flat [x,y,…]
+// polyline in world metres, the same frame as room and zone geometry. Empty
+// when no task has run since the map was created.
+type TrackDTO struct {
+	Points []float64 `json:"points"`
+}
+
 // AddZoneInput adds a carpet/no_mop/no_go rectangle. Geometry is flat [x,y,…].
 type AddZoneInput struct {
 	Kind     string    `json:"kind"`

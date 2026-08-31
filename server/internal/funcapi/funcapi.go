@@ -3,7 +3,7 @@
 // No key is shipped or extracted from the vendor binary: control_center generates
 // a fresh random token+port at runtime when the local service is enabled, and we
 // read them back over its own local terminal. Auth per request is
-// md5hex(body + token). See ../switchbot-research/docs/local-control-http.md.
+// md5hex(body + token).
 package funcapi
 
 import (

@@ -1,9 +1,7 @@
 // Package settings is the one definition of the device settings mundus exposes.
 // The Home Assistant entities and the web API are both built from this table, so
 // a name, option label or stored value can only be wrong in one place.
-//
-// Property IDs and values come from
-// ../../switchbot-research/docs/replacement-re/generated/app-settings-behavior.md.
+
 package settings
 
 import "fmt"

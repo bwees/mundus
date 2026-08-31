@@ -2,8 +2,7 @@
 // funcRequest API (funcapi). Sending high-level funcIDs lets control_center run
 // its full native choreography (cold-dock wake, exit_base, relocate, clean,
 // post-work servicing, dock) — so we get identical behavior without
-// reimplementing the lowlevel stack. funcID + param shapes are from
-// ../switchbot-research/docs/replacement-re/ (command-surface.md,
+// reimplementing the lowlevel stack. funcID + param shapes are from (command-surface.md,
 // generated/funcid-params.md, generated/captured-samples.md).
 package robotapi
 
