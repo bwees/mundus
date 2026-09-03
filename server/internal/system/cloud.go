@@ -28,6 +28,10 @@ const (
 // MQTT link: log/image/recording uploads, the vendor OTA updater and the frp
 // remote-access tunnel. Parking the cert does not touch them, so they are turned
 // off alongside it.
+//
+// Stopping update-robotic.service has a catch: it is the only reader of the OTA
+// request FIFOs, and control_center blocks forever writing to an unread FIFO.
+// otadrain.go takes those over whenever this list is disabled.
 var cloudServices = []string{
 	"debug_log_push.service",
 	"frpc.service",
@@ -42,8 +46,15 @@ type CloudStatus struct {
 	Bound     bool `json:"bound"`
 }
 
+// cloudEnabled reads the toggle from disk alone. The file state is the
+// authority, and answering without a robot round-trip lets startup consult it
+// before the control_center terminal is necessarily up.
+func cloudEnabled() bool {
+	return fileExists(cloudCert) && !fileExists(cloudCert+cloudParked)
+}
+
 func (s *System) CloudStatus() CloudStatus {
-	st := CloudStatus{Enabled: fileExists(cloudCert) && !fileExists(cloudCert+cloudParked)}
+	st := CloudStatus{Enabled: cloudEnabled()}
 	if out, err := s.robot.Raw("/cc/iot/cloud_conn/is_connect"); err == nil {
 		st.Connected = strings.HasPrefix(strings.TrimSpace(out), "true")
 	}
@@ -69,9 +80,17 @@ func (s *System) SetCloudEnabled(enabled bool) error {
 		if err := s.InstallCloudSim(s.simCA, s.simCert, s.simKey); err != nil {
 			return err
 		}
-		return s.setCloudServices(false)
+		if err := s.setCloudServices(false); err != nil {
+			return err
+		}
+		// update-robotic just went away; take over the OTA request FIFOs before
+		// control_center's next request blocks on them for good.
+		s.ota.start()
+		return nil
 	}
 
+	// Hand the FIFOs back before update-robotic is allowed to read them again.
+	s.ota.stop()
 	if err := s.RemoveCloudSim(); err != nil {
 		return err
 	}

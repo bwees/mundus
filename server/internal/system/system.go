@@ -5,6 +5,7 @@
 package system
 
 import (
+	"log/slog"
 	"os"
 	"sync"
 
@@ -19,10 +20,17 @@ type System struct {
 
 	// Credentials for the local cloud replacement, set via SetCloudSim.
 	simCA, simCert, simKey string
+
+	// ota keeps a reader on the vendor OTA request FIFOs while the cloud is
+	// disabled; without it the robot stops cleaning. See otadrain.go.
+	ota otaDrain
 }
 
-func New(r *robot.Robot) *System {
-	return &System{robot: r}
+func New(r *robot.Robot, log *slog.Logger) *System {
+	if log == nil {
+		log = slog.Default()
+	}
+	return &System{robot: r, ota: otaDrain{log: log}}
 }
 
 func fileExists(path string) bool {
