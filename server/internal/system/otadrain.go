@@ -91,13 +91,16 @@ func (d *otaDrain) stop() {
 	d.held = nil
 }
 
-// SyncOtaDrain matches the drain to the cloud setting. mundus restarts
-// independently of the cloud toggle, so this has to run at startup too --
-// otherwise a reboot with the cloud already off leaves the FIFOs unread.
-func (s *System) SyncOtaDrain() {
+// SyncCloudStandIns matches the OTA drain and recorder pruning to the cloud
+// setting. mundus restarts independently of the cloud toggle, so this has to
+// run at startup too -- otherwise a reboot with the cloud already off leaves the
+// FIFOs unread and the recorder archive growing.
+func (s *System) SyncCloudStandIns() {
 	if cloudEnabled() {
 		s.ota.stop()
+		s.recorder.stop()
 		return
 	}
 	s.ota.start()
+	s.recorder.start()
 }

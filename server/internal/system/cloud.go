@@ -86,11 +86,13 @@ func (s *System) SetCloudEnabled(enabled bool) error {
 		// update-robotic just went away; take over the OTA request FIFOs before
 		// control_center's next request blocks on them for good.
 		s.ota.start()
+		s.recorder.start()
 		return nil
 	}
 
 	// Hand the FIFOs back before update-robotic is allowed to read them again.
 	s.ota.stop()
+	s.recorder.stop()
 	if err := s.RemoveCloudSim(); err != nil {
 		return err
 	}

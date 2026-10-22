@@ -24,13 +24,17 @@ type System struct {
 	// ota keeps a reader on the vendor OTA request FIFOs while the cloud is
 	// disabled; without it the robot stops cleaning. See otadrain.go.
 	ota otaDrain
+
+	// recorder deletes old bags while upload-recorder is disabled; without it
+	// /data fills and the robot stops cleaning. See recorderprune.go.
+	recorder recorderPrune
 }
 
 func New(r *robot.Robot, log *slog.Logger) *System {
 	if log == nil {
 		log = slog.Default()
 	}
-	return &System{robot: r, ota: otaDrain{log: log}}
+	return &System{robot: r, ota: otaDrain{log: log}, recorder: recorderPrune{log: log}}
 }
 
 func fileExists(path string) bool {

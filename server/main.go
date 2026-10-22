@@ -138,9 +138,9 @@ func main() {
 	sys := system.New(r, log)
 
 	// The cloud toggle outlives this process, so a restart has to re-establish
-	// whatever it implies -- notably the OTA fifo drain, without which the robot
-	// stops cleaning about a day after the cloud is switched off.
-	sys.SyncOtaDrain()
+	// whatever it implies -- notably the OTA fifo drain and recorder pruning,
+	// without which the robot eventually stops cleaning with the cloud off.
+	sys.SyncCloudStandIns()
 
 	// The local cloud replacement runs whenever mundus does. It only takes
 	// effect once the cloud is disabled and the resolver points at it, so
